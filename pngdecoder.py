@@ -17,6 +17,9 @@ class PNGDecoder:
 	def getHeight(self):
 		return self.settings["height"]
 
+	def getBitmap(self):
+		return self.bitmap
+
 	def handleRawData(self):
 		row_counter = 0
 		row_size = (self.settings["width"] * 3) + 1 
@@ -44,6 +47,9 @@ class PNGDecoder:
 			row_counter = row_counter + 1
 
 		self.bitmap.append(row)
+		print(self.bitmap)
+		#for radek in self.bitmap:
+		#	print(radek)
 
 
 	def parse(self, file):
