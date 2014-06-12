@@ -2,7 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import pngdecoder
+import brainroller
 
-png = pngdecoder.PNGDecoder()
-png.parse("sachovnice.png")
-png.handleRawData()
+#png = pngdecoder.PNGDecoder()
+#png.parse("muj.png")
+#png.handleRawData()
+
+b = brainroller.Brainroller()
+b.fromBrainfuck()
