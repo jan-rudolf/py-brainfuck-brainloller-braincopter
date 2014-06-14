@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 import zlib
 
 class PNGEncoder():
@@ -13,12 +12,19 @@ class PNGEncoder():
 		self.IHDR = b'\x00\x00\x00\r' + self.IHDR + zlib.crc32(self.IHDR).to_bytes(4, 'big')
 		self.IEND = b'\x00\x00\x00\x00' + b'IEND' + b'' +  b'\xaeB`\x82'
 
-	def encode(self, pixels):
+	def encode(self, pixels, output_file = ""):
+		"""
+		Parameters:
+			self <class>  - instance of the class
+			pixels <list> - encoded Brainroller into pixels 
+			output_file <string> - output file, if is desired
+		Returns: <bytes> bytes of encoded png file
+		"""
+		#adding info about fitration method
 		for row in pixels:
 			self.bitmap_in_png.append([self.settings["filter_method"], row])
 
-
-		#prida info o filtraci
+		#converting list into bytes
 		for row in self.bitmap_in_png:
 			self.IDAT += row[0].to_bytes(1, 'big')
 
@@ -29,16 +35,16 @@ class PNGEncoder():
 
 		compressed_data = zlib.compress(self.IDAT)
 
-		print("Delka komprimovanych dat: {}".format(len(compressed_data)))
-		print("CRC: {}".format(zlib.crc32(b'IDAT' + self.IDAT)))
-
 		self.IDAT = len(compressed_data).to_bytes(4, 'big') + b'IDAT' + compressed_data + zlib.crc32(b'IDAT' + self.IDAT).to_bytes(4, 'big')
 
 		png_header = b'\x89PNG\r\n\x1a\n'
 		png = png_header + self.IHDR + self.IDAT + self.IEND
 
-		with open("mujobrazek.png", "wb") as f:
-			f.write(png)
+		if len(output_file):
+			with open(output_file, "wb") as f:
+				f.write(png)
+
+		return png
 	
 
 

@@ -15,17 +15,17 @@ png.encode(bitmap)
 png = pngdecoder.PNGDecoder()
 
 if(png.parse("mujobrazek.png")):
-	print("Povedlo se vyparsovat")
+	print("PNG file was successfully parsed...")
 else:
-	print("Nepovedlo se vyparsovat")
+	print("PNG file could be corrupted. Was not properly parsed. Check errors.")
 
 bitmap = png.handleRawData()
 
 brainfuck = brainroller.Brainroller().fromBitmaptoBrainfuck(bitmap, width, height)
 
 if (brainfuck == ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+."):
-	print("SHODUJE!")
+	print("MATCH!")
 else:
-	print("Neshoduje!")
+	print("NOT MATCH!")
 
 
