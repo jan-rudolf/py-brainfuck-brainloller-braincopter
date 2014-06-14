@@ -47,9 +47,9 @@ class PNGDecoder:
 			row_counter = row_counter + 1
 
 		self.bitmap.append(row)
-		print(self.bitmap)
-		#for radek in self.bitmap:
-		#	print(radek)
+
+
+		return self.bitmap
 
 
 	def parse(self, file):
@@ -63,6 +63,7 @@ class PNGDecoder:
 
 			#header test
 			if data != b'\x89PNG\r\n\x1a\n':
+				print("CHYBA: hlavicka")
 				return False
 
 			#
@@ -74,6 +75,7 @@ class PNGDecoder:
 			delka_dat_chunku = int.from_bytes(data, 'big')
 
 			if delka_dat_chunku != 13: #zkontroluje jestli je delka datave casti IHDR 13B
+				print("CHYBA: delka ihdr neni 13")
 				return False
 			#typ chunku
 			data = f.read(4)
@@ -82,6 +84,7 @@ class PNGDecoder:
 			if typ_chunku == b"IHDR":
 				self.chunks.append("IHDR")
 			else:
+				print("CHYBA: ihdr test")
 				return False
 			#data_chunku
 			data_chunku = f.read(delka_dat_chunku)
@@ -90,6 +93,7 @@ class PNGDecoder:
 			crc_chunku = int.from_bytes(f.read(4), "big")
 
 			if crc_chunku != zlib.crc32(typ_chunku + data_chunku):
+				print("CHYBA: crc ihdr")
 				return False
 
 			self.settings["width"] = int.from_bytes(data_chunku[0:4], "big")
@@ -121,14 +125,18 @@ class PNGDecoder:
 				#data chunku
 				data_chunku = f.read(delka_dat_chunku)
 
+				if (typ_chunku == b'IDAT'):
+					data_chunku = zlib.decompress(data_chunku)
+
 				#crc chunku
 				crc_chunku = int.from_bytes(f.read(4), "big")
 
 				if crc_chunku != zlib.crc32(typ_chunku + data_chunku):
+					print("CHYBA: crc data {} vs. {}".format(crc_chunku, zlib.crc32(typ_chunku + data_chunku)))
 					return False
 
 				if typ_chunku == b"IDAT":
-					self.rawdata = self.rawdata + zlib.decompress(data_chunku)
+					self.rawdata = self.rawdata + data_chunku
 					print("R: precetl jsem data")
 				elif typ_chunku == b"IEND":
 					self.chunks.append("IEND")

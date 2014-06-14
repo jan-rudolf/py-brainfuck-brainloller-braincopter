@@ -10,10 +10,10 @@ class Brainroller:
 		self.bitmap_width = 0
 		self.bitmap_height = 0
 
-	def fromBitmaptoBrainfuck(self):
-		self.bitmap = [[[255, 0, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [255, 255, 0], [128, 0, 0], [0, 255, 0], [0, 255, 255]], [[0, 128, 128], [0, 0, 255], [128, 0, 0], [128, 128, 0], [0, 128, 0], [255, 0, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 255]], [[0, 0, 0], [255, 0, 1], [1, 255, 0], [0, 0, 0], [0, 0, 0], [1, 127, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [255, 0, 0], [129, 1, 0], [128, 255, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [1, 255, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 1, 255], [0, 255, 1], [128, 1, 0], [0, 128, 0], [1, 0, 0], [255, 0, 0], [128, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 1, 255], [0, 0, 0], [0, 0, 0], [128, 255, 0], [0, 0, 0], [0, 1, 255], [0, 0, 1], [255, 1, 0], [0, 0, 0], [1, 255, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [128, 1, 0], [255, 255, 1], [0, 255, 1], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 255, 1], [1, 255, 0], [1, 255, 0], [1, 255, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [127, 0, 0], [1, 129, 0], [128, 0, 0], [0, 128, 0], [128, 0, 255], [255, 0, 1], [0, 0, 0], [0, 0, 0], [1, 255, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [129, 0, 0], [255, 127, 0], [1, 0, 0], [0, 127, 0], [0, 0, 1], [1, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [128, 255, 0], [1, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [255, 1, 0], [0, 129, 0], [128, 129, 0], [128, 1, 0], [0, 129, 0], [0, 0, 0]], [[0, 0, 0], [0, 1, 255], [0, 255, 1], [0, 0, 0], [0, 0, 0], [0, 1, 255], [128, 0, 1], [0, 0, 0], [129, 0, 0], [128, 128, 0], [128, 0, 255], [0, 128, 1], [0, 0, 0], [0, 0, 0]], [[0, 128, 128], [0, 0, 128], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 128, 255], [0, 128, 1], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 127, 255]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 255], [0, 255, 1], [255, 1, 0], [0, 0, 0], [1, 0, 255], [0, 128, 1], [0, 0, 0], [0, 0, 0], [0, 127, 255]]]
-		self.bitmap_width = 14
-		self.bitmap_height = 12
+	def fromBitmaptoBrainfuck(self, bitmap, width, height):
+		self.bitmap = bitmap
+		self.bitmap_width = width
+		self.bitmap_height = height
 
 		direction = 'R' #smer zpracovani do prava - R, smer do leva - L
 		row = 0
@@ -59,12 +59,10 @@ class Brainroller:
 			elif direction == 'L':
 				column -= 1
 
-		print(self.brainfuck)
-		print(self.bitmap[2][3])
+		return self.brainfuck
 
-	def fromBrainfuckToBitmap(self):
-		#vysledek ctvercove
-		self.brainfuck = ">+++++++++[<++++++++>-"
+	def fromBrainfuckToBitmap(self, brainfuck_code): 
+		self.brainfuck = brainfuck_code
 
 		data = list()
 		width = math.ceil(math.sqrt(len(self.brainfuck))) #aby bylo obrazek ctvercovy
@@ -118,6 +116,7 @@ class Brainroller:
 
 					row = list()
 					row.insert(0, [0, 255, 255]) #rotace doleva
+					row.insert(0, pixel)
 				else:
 					row.insert(0, [0, 128, 128])
 					bitmap.append(row)
@@ -127,24 +126,22 @@ class Brainroller:
 					row = list()
 
 					row.append([0, 128, 128])
+					row.append(pixel)
 
 		#padding
 		padding = width - len(row)
 
 		for i in range(padding):
 			if direction == 'R':
-				row.append([123, 345, 789]) #vloz balast na doplneni mezery
+				row.append([123, 123, 123]) #vloz balast na doplneni mezery
 			else:
-				row.insert(0, [123, 345, 789])
+				row.insert(0, [123, 123, 123])
 
 		bitmap.append(row)
 
-		#print("Radek:")
-		#print(row)
-		#print("Bitmapa:")
-		#for row in bitmap:
-		#	print(row)
-		return bitmap
+		height = len(bitmap)
+
+		return (bitmap, width, height)
 
 
 

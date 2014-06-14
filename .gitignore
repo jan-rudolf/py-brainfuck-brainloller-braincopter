@@ -1,0 +1,5 @@
+#Neber vsechno
+*
+#krome souboru .py
+!*.py
+
