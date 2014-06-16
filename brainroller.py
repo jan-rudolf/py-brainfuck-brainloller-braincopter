@@ -62,9 +62,6 @@ class Brainroller:
 				column += 1
 			elif direction == 'L':
 				column -= 1
-			#print("jedu row {} column {}".format(row, column))
-
-		#print("koncim row {} column {}".format(row, column))
 
 		return self.brainfuck
 

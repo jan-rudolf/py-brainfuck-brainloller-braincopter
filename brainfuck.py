@@ -13,7 +13,7 @@ output_stream = list()
 data_pointer = 0
 instruction_pointer = 0
 
-memory = list()
+memory = bytearray() 
 memory.append(0)
 
 while instruction_pointer < len(source_code):
@@ -28,7 +28,7 @@ while instruction_pointer < len(source_code):
 		data_pointer =  0 if data_pointer == 0 else data_pointer - 1
 
 	if instruction == '+':
-		memory[data_pointer] = (memory[data_pointer] + 1) % 255
+		memory[data_pointer] = (memory[data_pointer] + 1) % 256
 
 	if instruction == '-':
 		memory[data_pointer] = 255 if memory[data_pointer] == 0 else memory[data_pointer] - 1
