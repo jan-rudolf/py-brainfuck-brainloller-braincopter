@@ -35,7 +35,7 @@ class PNGEncoder():
 
 		compressed_data = zlib.compress(self.IDAT)
 
-		self.IDAT = len(compressed_data).to_bytes(4, 'big') + b'IDAT' + compressed_data + zlib.crc32(b'IDAT' + self.IDAT).to_bytes(4, 'big')
+		self.IDAT = len(compressed_data).to_bytes(4, 'big') + b'IDAT' + compressed_data + zlib.crc32(b'IDAT' + compressed_data).to_bytes(4, 'big')
 
 		png_header = b'\x89PNG\r\n\x1a\n'
 		png = png_header + self.IHDR + self.IDAT + self.IEND

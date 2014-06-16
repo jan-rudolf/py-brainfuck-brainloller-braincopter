@@ -20,13 +20,25 @@ class PNGDecoder:
 	def getBitmap(self):
 		return self.bitmap
 
+	def Filter4Paeth(self, a, b, c):
+		p = a + b - c
+		pa = abs(p - a)
+		pb = abs(p - b)
+		pc = abs(p - c)
+
+		if pa <= pb and pa <= pc:
+			return a
+		elif pb <= pc:
+			return b
+		else:
+			return c
+
 	def handleRawData(self):
 		row_counter = 0
 		row_size = (self.settings["width"] * 3) + 1 
 		row = list()
 		pixel = list()
 		pixel_counter = 1
-		skiped_filter = False
 
 		for byte in self.rawdata:
 			if row_counter % row_size == 0:
@@ -34,17 +46,85 @@ class PNGDecoder:
 					self.bitmap.append(row)
 
 				row = list()
+				filtration = byte
+
+				if filtration > 4:
+					pass #raise exception
+
 			else:
 				if pixel_counter % 3 == 0:
 					pixel.append(byte)
+					#"""
+					if filtration == 1:
+						a_index = len(row) - 1
+						if (a_index < 0):
+							a = [0, 0, 0]
+						else:
+							a = row[a_index]
+
+						pixel[0] = (a[0] + pixel[0]) % 256
+						pixel[1] = (a[1] + pixel[1]) % 256
+						pixel[2] = (a[2] + pixel[2]) % 256
+					elif filtration == 2:
+						b_index = len(self.bitmap) - 1
+						if (b_index < 0):
+							b = [0, 0, 0]
+						else:
+							b = self.bitmap[b_index][len(row)]
+
+						pixel[0] = (b[0] + pixel[0]) % 256
+						pixel[1] = (b[1] + pixel[1]) % 256
+						pixel[2] = (b[2] + pixel[2]) % 256
+					elif filtration == 3:
+						a_index = len(row) - 1
+						if (a_index < 0):
+							a = [0, 0, 0]
+						else:
+							a = row[a_index]
+
+						b_index = len(self.bitmap) - 1
+						if (b_index < 0):
+							b = [0, 0, 0]
+						else:
+							b = self.bitmap[b_index][len(row)]
+
+						pixel[0] = (pixel[0] + (a[0] + b[0]) // 2) % 256
+						pixel[1] = (pixel[1] + (a[1] + b[1]) // 2) % 256
+						pixel[2] = (pixel[2] + (a[2] + b[2]) // 2) % 256
+					elif filtration == 4:
+						a_index = len(row) - 1
+						if (a_index < 0):
+							a = [0, 0, 0]
+						else:
+							a = row[a_index]
+
+						b_index = len(self.bitmap) - 1
+						if (b_index < 0):
+							b = [0, 0, 0]
+						else:
+							b = self.bitmap[b_index][len(row)]
+
+						c_index = [len(self.bitmap) - 1, len(row) - 1]
+						if (c_index[0] < 0 or c_index[1] < 0):
+							c = [0, 0, 0]
+						else:
+							c = self.bitmap[c_index[0]][c_index[1]]
+
+						p = [self.Filter4Paeth(a[0], b[0], c[0]), self.Filter4Paeth(a[1], b[1], c[1]), self.Filter4Paeth(a[2], b[2], c[2])]
+
+						pixel[0] = (p[0] + pixel[0]) % 256
+						pixel[1] = (p[1] + pixel[1]) % 256
+						pixel[2] = (p[2] + pixel[2]) % 256
+					#"""
 					row.append(pixel)
+
 					pixel = list()
 				else:
 					pixel.append(byte)
 
-				pixel_counter = pixel_counter + 1
+				pixel_counter += 1
 
-			row_counter = row_counter + 1
+			row_counter += 1
 
 		self.bitmap.append(row)
 
@@ -109,15 +189,14 @@ class PNGDecoder:
 				chunk_data_length = int.from_bytes(bytes, "big")
 				chunk_type = f.read(4)
 				chunk_data = f.read(chunk_data_length)
-
-				if (chunk_type == b'IDAT'):
-					chunk_data = zlib.decompress(chunk_data)
-
 				chunk_crc = int.from_bytes(f.read(4), "big")
 
 				if chunk_crc != zlib.crc32(chunk_type + chunk_data):
 					print("error - PNG parse: chunk {},  crc data {} vs. {}".format(chunk_type, chunk_crc, zlib.crc32(chunk_type + chunk_data)))
 					return False
+				else:
+					if chunk_type == b'IDAT':
+						chunk_data = zlib.decompress(chunk_data)
 
 				if chunk_type == b"IDAT":
 					self.rawdata = self.rawdata + chunk_data

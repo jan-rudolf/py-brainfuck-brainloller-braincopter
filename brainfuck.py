@@ -5,7 +5,7 @@ Author: Jan Rudolf
 4.3.2013 23:43
 """
 
-source_code = "+++[--]>+"
+source_code = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
 
 input_stream = list("AHOJ")
 output_stream = list()
@@ -13,13 +13,15 @@ output_stream = list()
 data_pointer = 0
 instruction_pointer = 0
 
-memory = [ 0 for x in range(10) ]
+memory = list()
+memory.append(0)
 
 while instruction_pointer < len(source_code):
 	instruction = source_code[instruction_pointer]
 	instruction_pointer += 1
 
 	if instruction == '>':
+		memory.append(0)
 		data_pointer = 255 if data_pointer == 255 else data_pointer + 1
 
 	if instruction == '<':
@@ -29,7 +31,7 @@ while instruction_pointer < len(source_code):
 		memory[data_pointer] = (memory[data_pointer] + 1) % 255
 
 	if instruction == '-':
-		memory[data_pointer] = 0 if memory[data_pointer] == 0 else memory[data_pointer] - 1
+		memory[data_pointer] = 255 if memory[data_pointer] == 0 else memory[data_pointer] - 1
 
 	if instruction == '.':
 		output_stream.append(chr(memory[data_pointer]))

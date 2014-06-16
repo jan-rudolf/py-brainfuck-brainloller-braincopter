@@ -47,17 +47,24 @@ class Brainroller:
 			if self.bitmap[row][column][0] == 0 and self.bitmap[row][column][1] == 255 and self.bitmap[row][column][2] == 255:
 				#rotace doleva
 				row += 1
+				column = 13
 				direction = 'L'
+				#print("rotace do leva row {} column {}".format(row, column))
 
 			if self.bitmap[row][column][0] == 0 and self.bitmap[row][column][1] == 128 and self.bitmap[row][column][2] == 128:
 				#rotace doprava
 				row += 1
+				column = 0
 				direction = 'R'
+				#print("rotace do prava row {} column {}".format(row, column))
 
 			if direction == 'R':
 				column += 1
 			elif direction == 'L':
 				column -= 1
+			#print("jedu row {} column {}".format(row, column))
+
+		#print("koncim row {} column {}".format(row, column))
 
 		return self.brainfuck
 
