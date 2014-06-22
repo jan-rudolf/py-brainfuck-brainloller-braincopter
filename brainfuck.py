@@ -1,69 +1,115 @@
-"""
-Brainfuck interpreter
----------------------
-Author: Jan Rudolf
-4.3.2013 23:43
-"""
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import sys
 
-source_code = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+class BrainFuck:
+    """Interpretr jazyka brainfuck."""
+    
+    def __init__(self, data, memory=b'\x00', memory_pointer=0):
+        """Inicializace interpretru brainfucku."""
+        
+        # data programu
+        self.data = data
+        self.instruction_pointer = 0
+        
+        # inicializace proměnných
+        self.memory = bytearray(memory)
+        self.memory_pointer = memory_pointer
+        
+        # DEBUG a testy
+        # a) paměť výstupu
+        self.output = ''
 
-input_stream = list("AHOJ")
-output_stream = list()
+        while self.instruction_pointer < len(self.data):
+            instruction = self.data[self.instruction_pointer]
 
-data_pointer = 0
-instruction_pointer = 0
+            if instruction == '>':
+                self.instruction_pointer += 1
 
-memory = bytearray() 
-memory.append(0)
+                self.memory_pointer += 1
 
-while instruction_pointer < len(source_code):
-	instruction = source_code[instruction_pointer]
-	instruction_pointer += 1
+                if(len(self.memory) == self.memory_pointer):
+                    self.memory.append(0)
+                continue
 
-	if instruction == '>':
-		memory.append(0)
-		data_pointer = 255 if data_pointer == 255 else data_pointer + 1
+            if instruction == '<':
+                self.instruction_pointer += 1
+                self.memory_pointer =  0 if self.memory_pointer == 0 else self.memory_pointer - 1
+                continue
 
-	if instruction == '<':
-		data_pointer =  0 if data_pointer == 0 else data_pointer - 1
+            if instruction == '+':
+                self.instruction_pointer += 1
+                self.memory[self.memory_pointer] = (self.memory[self.memory_pointer] + 1) % 256
+                continue
 
-	if instruction == '+':
-		memory[data_pointer] = (memory[data_pointer] + 1) % 256
+            if instruction == '-':
+                self.instruction_pointer += 1
+                self.memory[self.memory_pointer] = 255 if self.memory[self.memory_pointer] == 0 else self.memory[self.memory_pointer] - 1
+                continue
 
-	if instruction == '-':
-		memory[data_pointer] = 255 if memory[data_pointer] == 0 else memory[data_pointer] - 1
+            if instruction == '.':
+                self.instruction_pointer += 1
+                #self.output += chr(self.memory[self.memory_pointer])
+                print(chr(self.memory[self.memory_pointer]), end="")
+                continue
 
-	if instruction == '.':
-		output_stream.append(chr(memory[data_pointer]))
+            if instruction == ',':
+                self.instruction_pointer += 1
+                try:
+                    input_str = input()
+                    self.memory[self.memory_pointer] = ord(input_str[0])
+                except:
+                    pass
+                continue
 
-	if instruction == ',':
-		try:
-			memory[data_pointer] = ord(input_stream.pop(0))
-		except:
-			pass
+            if instruction == '[' and self.memory[self.memory_pointer] == 0:
+                nested_cycle_bracket = 0
 
-	if instruction == '[' and memory[data_pointer] == 0:
-		while source_code[instruction_pointer] != ']':
-			instruction_pointer += 1
-		instruction_pointer += 1
+                while True:
+                    instruction_pointer += 1
+                    current_instruction = self.data[instruction_pointer]
 
-	if instruction == ']' and memory[data_pointer] != 0:
-		while source_code[instruction_pointer] != '[':
-			instruction_pointer -= 1
-		instruction_pointer += 1
+                    if current_instruction == ']' and nested_cycle_bracket == 0:
+                        break
 
+                    if current_instruction == ']':
+                        nested_cycle_bracket -= 1
 
+                    if current_instruction == '[':
+                        nested_cycle_bracket += 1
 
-print("Paměť:")
+                instruction_pointer += 1
+                continue
 
-for memory_cell in memory:
-	print(" {0} ".format(memory_cell), end = '')
+            if instruction == ']' and self.memory[self.memory_pointer] != 0:
+                nested_cycle_bracket = 0
 
-print()
+                while True:
+                    instruction_pointer = 0 if instruction_pointer == 0 else instruction_pointer - 1
+                    current_instruction = self.data[instruction_pointer]
 
-print("Výstup:")
+                    if current_instruction == '[' and nested_cycle_bracket == 0:
+                        break
+                
+                    if current_instruction == ']':
+                        nested_cycle_bracket += 1
 
-for output_element in output_stream:
-	print(output_element, end = '')
+                    if current_instruction == '[':
+                        nested_cycle_bracket -= 1
 
-print()
+                instruction_pointer += 1
+                continue
+
+            self.instruction_pointer += 1
+    
+    #
+    # pro potřeby testů
+    #
+    def get_memory(self):
+        return bytes(self.memory)
+
+    def print_debug(self):
+        print("Instruction pointer: {}".format(self.instruction_pointer))
+        print("Memory pointer: {}".format(self.memory_pointer))
+        print("Memory:")
+        print(self.get_memory())

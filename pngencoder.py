@@ -4,8 +4,8 @@ import zlib
 
 class PNGEncoder():
 
-	def __init__(self, width, height, bit_depth = 8, colour_type = 2, compression_method = 0, filter_method = 0, interlace_method = 0):
-		self.settings = {"width": width, "height": height, "bit_depth": bit_depth, "colour_type": colour_type, "compression_method": compression_method, "filter_method": filter_method, "interlace_method": interlace_method}
+	def __init__(self, width, height):
+		self.settings = {"width": width, "height": height, "bit_depth": 8, "colour_type": 2, "compression_method": 0, "filter_method": 0, "interlace_method": 0}
 		self.bitmap_in_png = list() 
 		self.IDAT = b''
 		self.IHDR = b'IHDR' + width.to_bytes(4, 'big') + height.to_bytes(4, 'big') + bit_depth.to_bytes(1, 'big') + colour_type.to_bytes(1, 'big') + compression_method.to_bytes(1, 'big') + filter_method.to_bytes(1, 'big') + interlace_method.to_bytes(1, 'big')

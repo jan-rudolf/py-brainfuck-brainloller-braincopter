@@ -3,7 +3,9 @@
 
 import pngdecoder
 import pngencoder
-import brainroller
+import brainloller
+import braincopter
+import brainfuck
 
 
 
@@ -12,26 +14,31 @@ import brainroller
 #png = pngencoder.PNGEncoder(width, height)
 #png.encode(bitmap)
 
-png = pngdecoder.PNGDecoder()
+"""
+png = pngdecoder.PNGDecoder("images/HelloWorld_braincopter.png")
 
-if(png.parse("images/HelloWorld.png")):
-	print("PNG file was successfully parsed...")
-else:
-	print("PNG file could be corrupted. Was not properly parsed. Check errors.")
+brainfuck_code = braincopter.BrainCopter().fromBitmaptoBrainFuck(png.bitmap)
 
-bitmap = png.handleRawData()
+hello = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+."
 
-#print("-----")
-#for row in bitmap:
-#	print(row)
+print(brainfuck_code)
 
-brainfuck = brainroller.Brainroller().fromBitmaptoBrainfuck(bitmap, png.getWidth(), png.getHeight())
-
-print(brainfuck)
-
-if (brainfuck == ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+."):
-	print("MATCH!")
-else:
+if hello == brainfuck_code:
+	print("MATH!")
+else: 
 	print("NOT MATCH!")
+"""
 
+brainfuck_code = ""
 
+with open("source/squares.txt", "r", encoding = "ascii") as f:
+	lines = f.readlines()
+
+for line in lines:
+	brainfuck_code += line
+
+program = brainfuck.BrainFuck(",>,< [ > [ >+ >+ << -] >> [- << + >>] <<< -] >>")
+
+print("")
+
+program.print_debug()

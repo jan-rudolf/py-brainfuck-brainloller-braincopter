@@ -1,5 +1,2 @@
-#Neber vsechno
-*
-#krome souboru .py
-!*.py
+.DS_Store
 

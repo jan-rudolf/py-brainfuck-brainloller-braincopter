@@ -3,22 +3,36 @@
 import os
 import zlib
 
+class PNGWrongHeaderError(Exception):
+    """Výjimka oznamující, že načítaný soubor zřejmě není PNG-obrázkem."""
+    pass
+
+
+class PNGNotImplementedError(Exception):
+    """Výjimka oznamující, že PNG-obrázek má strukturu, kterou neumíme zpracovat."""
+    pass
+
+
 class PNGDecoder:
-	def __init__(self):
-		self.file = ""
+	def __init__(self, filepath):
+		self.file = filepath
 		self.chunks = list()
 		self.rawdata = b""
 		self.bitmap = list()
 		self.settings = {"width": 0, "height": 0, "bit_depth": 0, "colour_type": 0, "compression_method": 0, "filter_method": 0, "interlace_method": 0}
+
+		self.parse()
+
+		if (self.settings["bit_depth"] != 8 or self.settings["compression_method"] != 0 or self.settings["filter_method"] != 0 or self.settings["interlace_method"] != 0 or self.settings["colour_type"] != 2):
+			raise PNGNotImplementedError()
+
+		self.handleRawData()
 
 	def getWidth(self):
 		return self.settings["width"]
 
 	def getHeight(self):
 		return self.settings["height"]
-
-	def getBitmap(self):
-		return self.bitmap
 
 	def Filter4Paeth(self, a, b, c):
 		p = a + b - c
@@ -131,9 +145,7 @@ class PNGDecoder:
 		return self.bitmap
 
 
-	def parse(self, png_file):
-		self.file = png_file
-
+	def parse(self):
 		if os.path.exists(self.file) == False:
 			print("error - PNG parse: file {} doesn't exist".format(self.file))
 			return False
@@ -143,8 +155,7 @@ class PNGDecoder:
 
 			#png header test
 			if data != b'\x89PNG\r\n\x1a\n':
-				print("error - PNG parse: header error, it's not a png file")
-				return False
+				raise PNGWrongHeaderError()
 
 			#IHDR
 			bytes = f.read(4) #lenght
@@ -194,15 +205,13 @@ class PNGDecoder:
 				if chunk_crc != zlib.crc32(chunk_type + chunk_data):
 					print("error - PNG parse: chunk {},  crc data {} vs. {}".format(chunk_type, chunk_crc, zlib.crc32(chunk_type + chunk_data)))
 					return False
-				else:
-					if chunk_type == b'IDAT':
-						chunk_data = zlib.decompress(chunk_data)
 
 				if chunk_type == b"IDAT":
 					self.rawdata = self.rawdata + chunk_data
 					print("PNG parse: IDAT loaded")
 				elif chunk_type == b"IEND":
 					self.chunks.append("IEND")
+					self.rawdata = zlib.decompress(self.rawdata)
 					print("PNG parse: IEND loaded")
 
 					return True 

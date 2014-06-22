@@ -9,16 +9,20 @@ class BrainLoller:
 		self.bitmap_width = 0
 		self.bitmap_height = 0
 
-	def fromBitmaptoBrainfuck(self, bitmap, width, height):
+	def fromBitmaptoBrainFuck(self, bitmap):
 		self.bitmap = bitmap
-		self.bitmap_width = width
-		self.bitmap_height = height
+		self.bitmap_width = len(bitmap[0])
+		self.bitmap_height = len(bitmap)
+
+		#print("bitmapa: sirka {} vyska {}".format(self.bitmap_width, self.bitmap_height))
 
 		direction = 'R' #smer zpracovani do prava - R, smer do leva - L
 		row = 0
 		column = 0
 
 		while row >= 0 and row < self.bitmap_height and column >= 0 and column < self.bitmap_width:
+			#print("row {} column {}".format(row, column))
+
 			if self.bitmap[row][column][0] == 255 and self.bitmap[row][column][1] == 0 and self.bitmap[row][column][2] == 0:
 				self.brainfuck += '>'
 
@@ -46,9 +50,12 @@ class BrainLoller:
 			if self.bitmap[row][column][0] == 0 and self.bitmap[row][column][1] == 255 and self.bitmap[row][column][2] == 255:
 				#rotace doleva
 				row += 1
-				column = 13
+				column = self.bitmap_width - 1
 				direction = 'L'
 				#print("rotace do leva row {} column {}".format(row, column))
+
+			if (self.bitmap_height == row or self.bitmap_width == column):
+					break
 
 			if self.bitmap[row][column][0] == 0 and self.bitmap[row][column][1] == 128 and self.bitmap[row][column][2] == 128:
 				#rotace doprava
@@ -64,7 +71,7 @@ class BrainLoller:
 
 		return self.brainfuck
 
-	def fromBrainfuckToBitmap(self, brainfuck_code): 
+	def fromBrainFuckToBitmap(self, brainfuck_code): 
 		self.brainfuck = brainfuck_code
 
 		data = list()
