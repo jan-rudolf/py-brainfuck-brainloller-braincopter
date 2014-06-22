@@ -119,13 +119,13 @@ class BrainLoller:
 					row.insert(0, pixel)
 			elif ((len(row) + 1) == width):
 				if direction == 'R':
-					row.append([0, 255, 255]) #rotace doleva
+					row.append([0, 255, 255]) #rotation right
 					bitmap.append(row)
 					
 					direction = 'L'
 
 					row = list()
-					row.insert(0, [0, 255, 255]) #rotace doleva
+					row.insert(0, [0, 255, 255]) #rotation left
 					row.insert(0, pixel)
 				else:
 					row.insert(0, [0, 128, 128])
@@ -143,7 +143,7 @@ class BrainLoller:
 
 		for i in range(padding):
 			if direction == 'R':
-				row.append([123, 123, 123]) #vloz balast na doplneni mezery
+				row.append([123, 123, 123]) #enter padding
 			else:
 				row.insert(0, [123, 123, 123])
 

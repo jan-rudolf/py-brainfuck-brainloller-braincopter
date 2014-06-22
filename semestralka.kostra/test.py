@@ -91,74 +91,75 @@ class TestBrainfuck(unittest.TestCase):
         self.assertEqual(program.output, 'Hello World!')
 
 
-#class TestBrainfuckWithInput(unittest.TestCase):
-#    """testuje chování interpretru brainfucku pro programy se vstupem"""
+class TestBrainfuckWithInput(unittest.TestCase):
+    """testuje chování interpretru brainfucku pro programy se vstupem"""
     
-#    def setUp(self):
-#        self.BF = brainx.BrainFuck
+    def setUp(self):
+        self.BF = brainx.BrainFuck
         # skrytí výstupu
-#        self.out = sys.stdout
-#        sys.stdout = FakeStdOut()
+        self.out = sys.stdout
+        sys.stdout = FakeStdOut()
     
-#    def tearDown(self):
-#        sys.stdout = self.out
+    def tearDown(self):
+        sys.stdout = self.out
     
-#    def test_bf_input_2(self):
-#        """numwarp.b pro vstup '123'"""
-#        with open( 'test_data/numwarp_input.b', encoding='ascii' ) as stream:
-#            data = stream.read()
-#        program = self.BF(data)
-#        self.assertEqual(program.output, '    /\\\n     /\\\n  /\\  /\n   / \n \\ \\/\n  \\\n   \n')
+    def test_bf_input_2(self):
+        """numwarp.b pro vstup '123'"""
+        with open( 'test_data/numwarp_input.b', encoding='ascii' ) as stream:
+            data = stream.read()
+        
+        program = self.BF(data)
+        self.assertEqual(program.output, '    /\\\n     /\\\n  /\\  /\n   / \n \\ \\/\n  \\\n   \n')
 
 
-#class TestPNG(unittest.TestCase):
-#    """testuje korektní načítání podmnožiny PNG-obrázků"""
+class TestPNG(unittest.TestCase):
+    """testuje korektní načítání podmnožiny PNG-obrázků"""
     
-#    def setUp(self):
-#        self.png = image_png.PngReader
+    def setUp(self):
+        self.png = image_png.PngReader
         # skrytí výstupu
-#        self.out = sys.stdout
-#        sys.stdout = FakeStdOut()
+        self.out = sys.stdout
+        sys.stdout = FakeStdOut()
     
-#    def tearDown(self):
-#        sys.stdout = self.out
+    def tearDown(self):
+        sys.stdout = self.out
     
-#    def test_png_01(self):
-#        """umíme jen PNG"""
-#        self.assertRaises( image_png.PNGWrongHeaderError, self.png, 'test_data/sachovnice.jpg' )
+    def test_png_01(self):
+        """umíme jen PNG"""
+        self.assertRaises( image_png.PNGWrongHeaderError, self.png, 'test_data/sachovnice.jpg' )
     
-#    def test_png_02(self):
-#        """umíme jen některá PNG"""
-#        self.assertRaises( image_png.PNGNotImplementedError, self.png, 'test_data/sachovnice_paleta.png' )
+    def test_png_02(self):
+        """umíme jen některá PNG"""
+        self.assertRaises( image_png.PNGNotImplementedError, self.png, 'test_data/sachovnice_paleta.png' )
     
-#    def test_png_03(self):
-#        """načtení jednoduchého PNG-obrázku"""
-#        image = self.png('test_data/sachovnice.png')
-#        self.assertEqual( image.rgb, [[(255, 0, 0), (0, 255, 0), (0, 0, 255)], [(255, 255, 255), (127, 127, 127), (0, 0, 0)], [(255, 255, 0), (255, 0, 255), (0, 255, 255)]] )
+    def test_png_03(self):
+        """načtení jednoduchého PNG-obrázku"""
+        image = self.png('test_data/sachovnice.png')
+        self.assertEqual( image.rgb, [[(255, 0, 0), (0, 255, 0), (0, 0, 255)], [(255, 255, 255), (127, 127, 127), (0, 0, 0)], [(255, 255, 0), (255, 0, 255), (0, 255, 255)]] )
 
 
-#class TestBrainloller(unittest.TestCase):
-#    """testuje chování interpretru brainlolleru"""
+class TestBrainloller(unittest.TestCase):
+    """testuje chování interpretru brainlolleru"""
     
-#    def setUp(self):
-#        self.BF = brainx.BrainFuck
-#        self.BL = brainx.BrainLoller
+    def setUp(self):
+        self.BF = brainx.BrainFuck
+        self.BL = brainx.BrainLoller
         # skrytí výstupu
-#        self.out = sys.stdout
-#        sys.stdout = FakeStdOut()
+        self.out = sys.stdout
+        sys.stdout = FakeStdOut()
     
-#    def tearDown(self):
-#        sys.stdout = self.out
+    def tearDown(self):
+        sys.stdout = self.out
     
-#    def test_bl_1a(self):
-#        """načtení dat z obrázku HelloWorld.png"""
-#        objekt = self.BL('test_data/HelloWorld.png')
-#        self.assertEqual(objekt.data, '>+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+.')
+    def test_bl_1a(self):
+        """načtení dat z obrázku HelloWorld.png"""
+        objekt = self.BL('test_data/HelloWorld.png')
+        self.assertEqual(objekt.data, '>+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+.')
     
-#    def test_bl_1b(self):
-#        """vykonání programu z obrázku HelloWorld.png"""
-#        objekt = self.BL('test_data/HelloWorld.png')
-#        self.assertEqual(objekt.program.output, 'Hello World!')
+    def test_bl_1b(self):
+        """vykonání programu z obrázku HelloWorld.png"""
+        objekt = self.BL('test_data/HelloWorld.png')
+        self.assertEqual(objekt.program.output, 'Hello World!')
 
 
 #

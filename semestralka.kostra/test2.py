@@ -1,5 +1,3 @@
 import brainx
 
-program = brainx.BrainFuck('[>+>+<<-]>>[<<+>>-]', memory=b'\x03\x03')
-
-print(program.get_memory())
+b = brainx.BrainCopter("test_data/braincopter.png")
