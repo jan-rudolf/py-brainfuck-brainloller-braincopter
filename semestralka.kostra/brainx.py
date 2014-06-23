@@ -134,7 +134,7 @@ class BrainFuck:
 class BrainLoller():
     """Třída pro zpracování jazyka brainloller."""
     
-    def __init__(self, filename):
+    def __init__(self, filename, run):
         """Inicializace interpretru brainlolleru."""
         
         # self.data obsahuje rozkódovaný zdrojový kód brainfucku..
@@ -200,21 +200,20 @@ class BrainLoller():
                 column -= 1
 
         # ..který pak předhodíme interpretru
-        self.program = BrainFuck(self.data)
+        if run:
+            self.program = BrainFuck(self.data)
 
 
 class BrainCopter():
     """Třída pro zpracování jazyka braincopter."""
     
-    def __init__(self, filename):
+    def __init__(self, filename, run=True):
         """Inicializace interpretru braincopteru."""
         
         # self.data obsahuje rozkódovaný zdrojový kód brainfucku..
         self.data = ''
 
-        print("BrainCopter: PNG načítám data...")
         bitmap = image_png.PngReader(filename).rgb
-        print("BrainCopter: Parsuju BrainFuck...")
         bitmap_width = len(bitmap[0])
         bitmap_height = len(bitmap)
 
@@ -265,8 +264,9 @@ class BrainCopter():
             elif direction == 'L':
                 column -= 1
 
-        print("BrainCopter: Spoustim...")
+    
         # ..který pak předhodíme interpretru
-        self.program = BrainFuck(self.data)
+        if run:
+            self.program = BrainFuck(self.data)
 
 

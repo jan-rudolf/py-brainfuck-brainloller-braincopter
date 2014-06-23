@@ -10,7 +10,7 @@ class BrainCopter:
 		self.bitmap_height = 0
 		self.transition_table = {'>': 0, '<': 1, '+': 2, '-': 3, '.' : 4, ',' : 5, '[': 6, ']': 7, 'L': 8, 'R': 9}
 
-	def BFpixelEncode (value, pixel):
+	def BFpixelEncode (self, value, pixel):
 		r = pixel[0]
 		g = pixel[1]
 		b = pixel[2]
@@ -20,7 +20,7 @@ class BrainCopter:
 			g += 1
 			b += 1
 
-		return [r, g, b]
+		return (r, g, b)
 
 	def fromBitmaptoBrainFuck(self, bitmap):
 		self.bitmap = bitmap
