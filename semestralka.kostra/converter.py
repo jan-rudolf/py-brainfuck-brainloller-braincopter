@@ -85,13 +85,24 @@ class BrainFuck2BrainLoller():
 		self.bitmap.append(row)
 
 class BrainFuck2BrainCopter():
+	def BFpixelEncode (self, value, pixel):
+		r = pixel[0]
+		g = pixel[1]
+		b = pixel[2]
+
+		while (((65536 * r + 256 * g + b) % 11) != value):
+			b = (b + 1) % 256
+
+		return (r, g, b)
+
 	def __init__(self, bitmap, brainfuck_code):
-		self.transition_table = {'>': 0, '<': 1, '+': 2, '-': 3, '.' : 4, ',' : 5, '[': 6, ']': 7, 'L': 8, 'R': 9}
+		self.transition_table = {'>': 0, '<': 1, '+': 2, '-': 3, '.' : 4, ',' : 5, '[': 6, ']': 7, 'R': 8, 'L': 9, 'N': 10}
 		self.brainfuck = brainfuck_code
+		self.bitmap = bitmap
 		self.bitmap_width = len(bitmap[0])
 		self.bitmap_height = len(bitmap)
 
-		if len(brainfuck_code) > (self.bitmap_height * self.bitmap_width):
+		if (len(brainfuck_code) > (self.bitmap_height * self.bitmap_width)):
 			print("warning: BrainFuck source code is longer than this picture's bitmap, it will not be encoded the whole code")
 
 		row = 0
@@ -99,50 +110,55 @@ class BrainFuck2BrainCopter():
 		direction = 'R'
 		brainfuck_counter = 0
 
-		while row >= 0 and row < self.bitmap_height and column >= 0 and column < self.bitmap_width and brainfuck_counter < len(self.brainfuck):
+		while row >= 0 and row < self.bitmap_height and column >= 0 and column < self.bitmap_width:
 			if((column + 1) == self.bitmap_width or (column == 0 and row > 0)):
 				if ((column + 1) == self.bitmap_width):
 					braincopter_number = self.transition_table['L']
-					old_pixel = bitmap[row][column]
+					old_pixel = self.bitmap[row][column]
 					new_pixel = self.BFpixelEncode(braincopter_number, old_pixel)
+					self.bitmap[row][column] = new_pixel
+
+					row += 1
+
+					if row >= self.bitmap_height:
+						break
+
+					self.bitmap[row][column] = new_pixel
+
+					direction = 'L'
+
 
 				if (column == 0 and row > 0):
 					braincopter_number = self.transition_table['R']
-					old_pixel = bitmap[row][column]
+					old_pixel = self.bitmap[row][column]
 					new_pixel = self.BFpixelEncode(braincopter_number, old_pixel)
+					self.bitmap[row][column] = new_pixel
 
-			else:
+					row += 1
+
+					if row >= self.bitmap_height:
+						break
+
+					self.bitmap[row][column] = new_pixel
+
+					direction = 'R'
+			elif (brainfuck_counter < len(self.brainfuck)):
 				braincopter_number = self.transition_table[self.brainfuck[brainfuck_counter]]
-				old_pixel = bitmap[row][column]
+				old_pixel = self.bitmap[row][column]
 				new_pixel = self.BFpixelEncode(braincopter_number, old_pixel)
-
-			bitmap[row][column] = new_pixel
-
-			if (braincopter_number == self.transition_table['L']):
-				row += 1
-				column = self.bitmap_width - 1
-			elif (braincopter_number == self.transition_table['R']):
-				row += 1
-				column = 0
+				brainfuck_counter += 1
+				self.bitmap[row][column] = new_pixel
 			else:
-				if(direction == 'R'):
-					column += 1
-				else:
-					column -= 1
+				braincopter_number = self.transition_table['N']
+				old_pixel = self.bitmap[row][column]
+				new_pixel = self.BFpixelEncode(braincopter_number, old_pixel)
+				brainfuck_counter += 1
+				self.bitmap[row][column] = new_pixel
 
-		return bitmap
-
-		def BFpixelEncode (self, value, pixel):
-			r = pixel[0]
-			g = pixel[1]
-			b = pixel[2]
-
-			while (((65536 * r + 256 * g + b) % 11) != value):
-				r += 1
-				g += 1
-				b += 1
-
-		return (r, g, b)
+			if(direction == 'R'):
+				column += 1
+			else:
+				column -= 1
 
 
 
@@ -176,7 +192,7 @@ def bc2bf(src, dst):
 
 def bf2bc(src, dst):
 	with open(src, "r", encoding="ascii") as f:
-		f.readlines()
+		lines = f.readlines()
 
 	brainfuck_code = ""
 
@@ -185,7 +201,7 @@ def bf2bc(src, dst):
 
 	bitmap = image_png.PngReader(dst).rgb
 
-	bitmap = BrainFuck2BrainCopter(bitmap, brainfuck_code)
+	bitmap = BrainFuck2BrainCopter(bitmap, brainfuck_code).bitmap
 
 	image_png.PNGWriter(bitmap, dst)
 
@@ -196,7 +212,7 @@ def bl2bc(src, dst):
 
 	bitmap = image_png.PngReader(dst).rgb
 
-	bitmap = BrainFuck2BrainCopter(bitmap, brainfuck_code)
+	bitmap = BrainFuck2BrainCopter(bitmap, brainfuck_code).bitmap
 
 	image_png.PNGWriter(bitmap, dst)
 
@@ -216,19 +232,15 @@ class WhichBrainxPic():
 		width = len(bitmap[0])
 
 		instruction_match_counter = 0
-		max_check = 2 * width
 		max_check_iterator = 0
 
-		for pixel in bitmap:
-			if max_check_iterator == max_check:
-				break
-
+		for pixel in bitmap[0]:
 			if pixel in brainloller_instructions:
 				instruction_match_counter += 1
 			
 			max_check_iterator += 1
 
-		if instruction_match_counter >= (max_check / 2):
+		if instruction_match_counter >= (max_check_iterator / 2):
 			self.format = "bl"
 		else:
 			self.format = "bc"
@@ -244,7 +256,7 @@ if __name__ == "__main__":
 
 	if (arg.src[-4:] == '.png' or arg.src[-4:] == '.txt' or arg.src[-2:] == '.b'):
 		if (arg.src[-4:] == '.png'):
-			format_from = WhichBrainxPic(src)
+			format_from = WhichBrainxPic(arg.src).format
 
 		if (arg.src[-4:] == '.txt' or arg.src[-2:] == '.b'):
 			format_from = "bf"
@@ -253,10 +265,15 @@ if __name__ == "__main__":
 		print("src: unknown source file")
 
 	if (arg.dst[-4:] == '.png' or arg.dst[-4:] == '.txt' or arg.dst[-2:] == '.b'):
+		format_to = ""
+
 		if (arg.dst[-4:] == '.png'):
+			if (os.path.isfile(arg.dst)):
+				format_to = "bc"
+
 			if format_from == "bl":
 				format_to = "bc"
-			else:
+			elif len(format_to) == 0:
 				format_to = "bl"
 
 		if (arg.dst[-4:] == '.txt' or arg.dst[-2:] == '.b'):

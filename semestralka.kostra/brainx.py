@@ -6,6 +6,7 @@ import image_png
 class BrainFuck:
     """Interpretr jazyka brainfuck."""
     def input_check(self):
+        print("Hledam input...")
         input_loading = False
         for instruction in self.data:
             if input_loading:
@@ -32,6 +33,8 @@ class BrainFuck:
         self.input = ''
 
         self.input_check()
+
+        print("Running...")
         
         # DEBUG a testy
         # a) paměť výstupu
@@ -213,7 +216,9 @@ class BrainCopter():
         # self.data obsahuje rozkódovaný zdrojový kód brainfucku..
         self.data = ''
 
+        #print("Dekoduju PNG...")
         bitmap = image_png.PngReader(filename).rgb
+        #print("Dekoduju BrainFuck...")
         bitmap_width = len(bitmap[0])
         bitmap_height = len(bitmap)
 
@@ -250,23 +255,48 @@ class BrainCopter():
             if brainfuck_code == 8:
                 #rotace doleva
                 row += 1
-                column = bitmap_width - 1
-                direction = 'L'
+                column = 0
+                direction = 'R'
 
             if brainfuck_code == 9:
                 #rotace doprava
                 row += 1
-                column = 0
-                direction = 'R'
+                column = bitmap_width - 1
+                direction = 'L'
 
             if direction == 'R':
                 column += 1
             elif direction == 'L':
                 column -= 1
 
-    
+        #print("Dekodoval jsem...")
         # ..který pak předhodíme interpretru
         if run:
+            #print("Spoustim...")
             self.program = BrainFuck(self.data)
+
+if __name__ == "__main__":
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("src", help="source code or file with source code")
+    arg = parser.parse_args()
+
+    if os.path.isfile(arg.src):
+        if (arg.src[-4:] == ".txt" or arg.src[-2:] == ".b"):
+            with open(arg.src, "r", encoding="ascii") as f:
+                lines = f.readlines()
+
+            brainfuck_code = ""
+
+            for line in lines:
+                brainfuck_code += line
+
+            BrainFuck(brainfuck_code)
+        else:
+            print("src: unknown source file")
+    else:
+        BrainFuck(arg.src)
 
 
