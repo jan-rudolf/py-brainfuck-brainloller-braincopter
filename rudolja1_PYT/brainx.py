@@ -1,6 +1,5 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import sys
 
 import image_png
@@ -303,7 +302,7 @@ if __name__ == "__main__":
                 brainfuck_code += line
 
             BrainFuck(brainfuck_code)
-        elif (arg.src[-4:] == ".png"):
+        elif arg.src[-4:] == ".png":
             format = WhichBrainxPic(arg.src).format
 
             if format == "bl":

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import os
 import argparse
 import math
@@ -6,43 +8,40 @@ import brainx
 import image_png
 
 
-class BrainFuck2BrainLoller():
-
-    def __init__(self, brainfuck_code):
-        brainfuck = brainfuck_code
-
+class Brainfuck2Brainloller():
+    def __init__(self, brainfuck_source_code):
         data = list()
-        width = math.ceil(math.sqrt(len(brainfuck))) #aby bylo obrazek ctvercovy
 
-        for prikaz in brainfuck:
-            if prikaz == '>':
+        for command in brainfuck_source_code:
+            if command == '>':
                 data.append([255, 0, 0])
 
-            if prikaz == '<':
+            if command == '<':
                 data.append([128, 0, 0])
 
-            if prikaz == '+':
+            if command == '+':
                 data.append([0, 255, 0])
 
-            if prikaz == '-':
+            if command == '-':
                 data.append([0, 128, 0])
 
-            if prikaz == '.':
+            if command == '.':
                 data.append([0, 0, 255])
 
-            if prikaz == ',':
+            if command == ',':
                 data.append([0, 0, 128])
 
-            if prikaz == '[':
+            if command == '[':
                 data.append([255, 255, 0])
 
-            if prikaz == ']':
+            if command == ']':
                 data.append([128, 128, 0])
 
         row = list()
-        self.bitmap = list()
-
         direction = 'R'
+        width = math.ceil(math.sqrt(len(brainfuck_source_code)))
+
+        self.bitmap = list()
 
         for pixel in data:
             if (len(row) + 1) < width:
@@ -50,26 +49,27 @@ class BrainFuck2BrainLoller():
                     row.append(pixel)
                 else:
                     row.insert(0, pixel)
+
             elif (len(row) + 1) == width:
+                # rotation right
                 if direction == 'R':
-                    # rotation right
                     row.append([0, 255, 255])
                     self.bitmap.append(row)
                     
                     direction = 'L'
 
-                    row = list()
                     # rotation left
+                    row = list()
                     row.insert(0, [0, 255, 255])
                     row.insert(0, pixel)
                 else:
                     row.insert(0, [0, 128, 128])
+
                     self.bitmap.append(row)
 
                     direction = 'R'
 
                     row = list()
-
                     row.append([0, 128, 128])
                     row.append(pixel)
 
@@ -77,8 +77,8 @@ class BrainFuck2BrainLoller():
         padding = width - len(row)
 
         for i in range(padding):
+            # enter padding
             if direction == 'R':
-                # enter padding
                 row.append([123, 123, 123])
             else:
                 row.insert(0, [123, 123, 123])
@@ -86,9 +86,8 @@ class BrainFuck2BrainLoller():
         self.bitmap.append(row)
 
 
-class BrainFuck2BrainCopter():
-
-    def __init__(self, bitmap, brainfuck_code):
+class Brainfuck2Braincopter():
+    def __init__(self, bitmap, brainfuck_source_code):
         self.transition_table = {
             '>': 0,
             '<': 1,
@@ -102,12 +101,12 @@ class BrainFuck2BrainCopter():
             'L': 9,
             'N': 10
         }
-        self.brainfuck = brainfuck_code
         self.bitmap = bitmap
         self.bitmap_width = len(bitmap[0])
         self.bitmap_height = len(bitmap)
+        self.brainfuck = brainfuck_source_code
 
-        if len(brainfuck_code) > (self.bitmap_height * self.bitmap_width):
+        if len(self.brainfuck) > (self.bitmap_height * self.bitmap_width):
             print(
                 "warning: BrainFuck source code is longer than this picture's bitmap, it will not encode the whole code"
             )
@@ -115,10 +114,10 @@ class BrainFuck2BrainCopter():
         row = 0
         column = 0
         direction = 'R'
-        brainfuck_counter = 0
+        counter = 0
 
         while row >= 0 and row < self.bitmap_height and column >= 0 and column < self.bitmap_width:
-            if(column + 1) == self.bitmap_width or (column == 0 and row > 0):
+            if (column + 1) == self.bitmap_width or (column == 0 and row > 0):
                 if (column + 1) == self.bitmap_width:
                     braincopter_number = self.transition_table['R']
                     old_pixel = self.bitmap[row][column]
@@ -134,7 +133,6 @@ class BrainFuck2BrainCopter():
 
                     direction = 'L'
 
-
                 if column == 0 and row > 0:
                     braincopter_number = self.transition_table['L']
                     old_pixel = self.bitmap[row][column]
@@ -149,18 +147,22 @@ class BrainFuck2BrainCopter():
                     self.bitmap[row][column] = new_pixel
 
                     direction = 'R'
-            elif brainfuck_counter < len(self.brainfuck):
-                braincopter_number = self.transition_table[self.brainfuck[brainfuck_counter]]
+
+            elif counter < len(self.brainfuck):
+                braincopter_number = self.transition_table[self.brainfuck[counter]]
                 old_pixel = self.bitmap[row][column]
                 new_pixel = self.brainfuck_pixel_encode(braincopter_number, old_pixel)
-                brainfuck_counter += 1
                 self.bitmap[row][column] = new_pixel
+
+                counter += 1
+
             else:
                 braincopter_number = self.transition_table['N']
                 old_pixel = self.bitmap[row][column]
                 new_pixel = self.brainfuck_pixel_encode(braincopter_number, old_pixel)
-                brainfuck_counter += 1
                 self.bitmap[row][column] = new_pixel
+
+                counter += 1
 
             if direction == 'R':
                 column += 1
@@ -179,15 +181,15 @@ class BrainFuck2BrainCopter():
 
 
 def bf2bl(src, dst):
+    brainfuck_source_code = str()
+
     with open(src, "r", encoding="ascii") as f:
         lines = f.readlines()
 
-    brainfuck_code = ""
-
     for line in lines:
-        brainfuck_code += line
+        brainfuck_source_code += line
 
-    bitmap = BrainFuck2BrainLoller(brainfuck_code).bitmap
+    bitmap = Brainfuck2Brainloller(brainfuck_source_code).bitmap
 
     image_png.PNGWriter(bitmap, dst)
 
@@ -208,17 +210,17 @@ def bc2bf(src, dst):
 
 
 def bf2bc(src, dst):
+    brainfuck_code = str()
+
     with open(src, "r", encoding="ascii") as f:
         lines = f.readlines()
-
-    brainfuck_code = ""
 
     for line in lines:
         brainfuck_code += line
 
     bitmap = image_png.PngReader(dst).rgb
 
-    bitmap = BrainFuck2BrainCopter(bitmap, brainfuck_code).bitmap
+    bitmap = Brainfuck2Braincopter(bitmap, brainfuck_code).bitmap
 
     image_png.PNGWriter(bitmap, dst)
 
@@ -227,7 +229,7 @@ def bl2bc(src, dst):
     brainfuck_code = brainx.BrainLoller(src, run=False).data
 
     bitmap = image_png.PngReader(dst).rgb
-    bitmap = BrainFuck2BrainCopter(bitmap, brainfuck_code).bitmap
+    bitmap = Brainfuck2Braincopter(bitmap, brainfuck_code).bitmap
 
     image_png.PNGWriter(bitmap, dst)
 
@@ -235,13 +237,20 @@ def bl2bc(src, dst):
 def bc2bl(src, dst):
     brainfuck_code = brainx.BrainCopter(src, run=False).data
 
-    bitmap = BrainFuck2BrainLoller(brainfuck_code).bitmap
+    bitmap = Brainfuck2Brainloller(brainfuck_code).bitmap
 
     image_png.PNGWriter(bitmap, dst)
 
 
 if __name__ == "__main__":
-    convert_fce = {"bf2bl": bf2bl, "bl2bf": bl2bf, "bc2bf": bc2bf, "bf2bc": bf2bc, "bl2bc": bl2bc, "bc2bl": bc2bl}
+    convert_functions = {
+        "bf2bl": bf2bl,
+        "bl2bf": bl2bf,
+        "bc2bf": bc2bf,
+        "bf2bc": bf2bc,
+        "bl2bc": bl2bc,
+        "bc2bl": bc2bl
+    }
 
     parser = argparse.ArgumentParser()
     parser.add_argument("src", help="path to the source file")
@@ -275,11 +284,11 @@ if __name__ == "__main__":
     else:
         print("dst: unknown source file")
 
-    conversion = format_from + "2" + format_to
-
-    if conversion in convert_fce:
-        print("conversion: {}".format(conversion))
-        convert_fce[conversion](arg.src, arg.dst)
+    conversion_string = '{}2{}'.format(format_from, format_to)
+    
+    if conversion_string in convert_functions:
+        print("conversion: {}".format(conversion_string))
+        convert_functions[conversion_string](arg.src, arg.dst)
     else:
-        print("unknown conversion {}".format(conversion)) 
+        print("unknown conversion {}".format(conversion_string))
 
