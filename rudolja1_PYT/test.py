@@ -150,7 +150,7 @@ class TestBrainloller(unittest.TestCase):
         """loading of data from HelloWorld.png"""
         objekt = self.BL('test_data/HelloWorld.png')
         self.assertEqual(
-            objekt.data,
+            objekt.brainfuck_source_code,
             '>+++++++++[<++++++++>-]<.>+++++++[<++++>'
             '-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>'
             '>>++++++++++[<+++++++++>-]<---.<<<<.+++.--'

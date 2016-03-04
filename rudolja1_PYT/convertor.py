@@ -285,7 +285,7 @@ if __name__ == "__main__":
         print("dst: unknown source file")
 
     conversion_string = '{}2{}'.format(format_from, format_to)
-    
+
     if conversion_string in convert_functions:
         print("conversion: {}".format(conversion_string))
         convert_functions[conversion_string](arg.src, arg.dst)
