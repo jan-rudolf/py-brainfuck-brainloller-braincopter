@@ -1,13 +1,16 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import sys
+
 import image_png
 
+
 class BrainFuck:
-    """Interpretr jazyka brainfuck."""
+    """interpret of brainfuck"""
     def input_check(self):
-        print("Hledam input...")
         input_loading = False
+
         for instruction in self.data:
             if input_loading:
                 self.input += instruction
@@ -19,37 +22,31 @@ class BrainFuck:
                     input_loading = True
     
     def __init__(self, data, memory=b'\x00', memory_pointer=0):
-        """Inicializace interpretru brainfucku."""
+        """init of interpreter"""
         
-        # data programu
+        # program data
         self.data = data
         instruction_pointer = 0
         
-        # inicializace proměnných
+        # inicialization of variables
         self.memory = bytearray(memory)
         self.memory_pointer = memory_pointer
 
-        #input
         self.input = ''
 
         self.input_check()
 
-        print("Running...")
-        
-        # DEBUG a testy
-        # a) paměť výstupu
         self.output = ''
 
         while instruction_pointer < len(self.data):
             instruction = self.data[instruction_pointer]
-            #print(instruction, end="")
 
             if instruction == '>':
                 instruction_pointer += 1
 
                 self.memory_pointer += 1
 
-                if(len(self.memory) == self.memory_pointer):
+                if len(self.memory) == self.memory_pointer:
                     self.memory.append(0)
                 continue
 
@@ -72,14 +69,14 @@ class BrainFuck:
                 instruction_pointer += 1
 
                 self.output += chr(self.memory[self.memory_pointer])
-                sys.stdout.write(chr(self.memory[self.memory_pointer]))
+                print(chr(self.memory[self.memory_pointer]), sep='', end='')
                 
                 continue
 
             if instruction == ',':
                 instruction_pointer += 1
                 
-                if (len(self.input)):
+                if len(self.input):
                     self.memory[self.memory_pointer] = ord(self.input[0])
                     self.input = self.input[1:]
                 else:
@@ -127,35 +124,31 @@ class BrainFuck:
             instruction_pointer += 1
     
     #
-    # pro potřeby testů
+    # for test need
     #
     def get_memory(self):
-        # Nezapomeňte upravit získání návratové hodnoty podle vaší implementace!
         return bytes(self.memory)
 
 
 class BrainLoller():
-    """Třída pro zpracování jazyka brainloller."""
+    """class for Brainloller"""
     
-    def __init__(self, filename, run):
-        """Inicializace interpretru brainlolleru."""
+    def __init__(self, filename, run=True):
+        """init"""
         
-        # self.data obsahuje rozkódovaný zdrojový kód brainfucku..
+        # stores source code of Brainfuck
         self.data = ''
 
         bitmap = image_png.PngReader(filename).rgb
         bitmap_width = len(bitmap[0])
         bitmap_height = len(bitmap)
 
-        #print("bitmapa: sirka {} vyska {}".format(self.bitmap_width, self.bitmap_height))
-
-        direction = 'R' #smer zpracovani do prava - R, smer do leva - L
+        # direction of parsing - R = right, L = left
+        direction = 'R'
         row = 0
         column = 0
 
         while row >= 0 and row < bitmap_height and column >= 0 and column < bitmap_width:
-            #print("row {} column {}".format(row, column))
-
             if bitmap[row][column][0] == 255 and bitmap[row][column][1] == 0 and bitmap[row][column][2] == 0:
                 self.data += '>'
 
@@ -181,53 +174,50 @@ class BrainLoller():
                 self.data += ']'
 
             if bitmap[row][column][0] == 0 and bitmap[row][column][1] == 255 and bitmap[row][column][2] == 255:
-                #rotace doleva
+                # left rotation
                 row += 1
                 column = bitmap_width - 1
                 direction = 'L'
-                #print("rotace do leva row {} column {}".format(row, column))
 
-            if (bitmap_height == row or bitmap_width == column):
+            if bitmap_height == row or bitmap_width == column:
                     break
 
             if bitmap[row][column][0] == 0 and bitmap[row][column][1] == 128 and bitmap[row][column][2] == 128:
-                #rotace doprava
+                #right rotation
                 row += 1
                 column = 0
                 direction = 'R'
-                #print("rotace do prava row {} column {}".format(row, column))
 
             if direction == 'R':
                 column += 1
             elif direction == 'L':
                 column -= 1
 
-        # ..který pak předhodíme interpretru
         if run:
             self.program = BrainFuck(self.data)
 
 
 class BrainCopter():
-    """Třída pro zpracování jazyka braincopter."""
+    """class BrainCopter"""
     
     def __init__(self, filename, run=True):
-        """Inicializace interpretru braincopteru."""
+        """init"""
         
-        # self.data obsahuje rozkódovaný zdrojový kód brainfucku..
+        # contains source code of Brainfuck
         self.data = ''
 
-        #print("Dekoduju PNG...")
         bitmap = image_png.PngReader(filename).rgb
-        #print("Dekoduju BrainFuck...")
         bitmap_width = len(bitmap[0])
         bitmap_height = len(bitmap)
 
-        direction = 'R' #smer zpracovani do prava - R, smer do leva - L
+        #direction od parsing - L = left, R = right
+        direction = 'R'
         row = 0
         column = 0
 
         while row >= 0 and row < bitmap_height and column >= 0 and column < bitmap_width:
-            brainfuck_code = (65536 * bitmap[row][column][0] + 256 * bitmap[row][column][1] + bitmap[row][column][2]) % 11 
+            brainfuck_code = (65536 * bitmap[row][column][0] + 256 * bitmap[row][column][1] + bitmap[row][column][2]) % 11
+
             if brainfuck_code == 0:
                 self.data += '>'
 
@@ -253,27 +243,46 @@ class BrainCopter():
                 self.data += ']'
 
             if brainfuck_code == 8:
-                #rotace doleva
-                row += 1
-                column = 0
-                direction = 'R'
-
-            if brainfuck_code == 9:
-                #rotace doprava
+                #right rotation
                 row += 1
                 column = bitmap_width - 1
                 direction = 'L'
+
+            if brainfuck_code == 9:
+                #left rotation
+                row += 1
+                column = 0
+                direction = 'R'
 
             if direction == 'R':
                 column += 1
             elif direction == 'L':
                 column -= 1
 
-        #print("Dekodoval jsem...")
-        # ..který pak předhodíme interpretru
         if run:
-            #print("Spoustim...")
             self.program = BrainFuck(self.data)
+
+class WhichBrainxPic():
+    def __init__(self, src):
+        self.format = ""
+
+        brainloller_instructions = [(255, 0, 0), (128, 0, 0), (0, 255, 0), (0, 128, 0), (0, 0, 255), (0, 0, 128), (255, 255, 0), (128, 128, 0)]
+        bitmap = image_png.PngReader(src).rgb
+        width = len(bitmap[0])
+
+        instruction_match_counter = 0
+        max_check_iterator = 0
+
+        for pixel in bitmap[0]:
+            if pixel in brainloller_instructions:
+                instruction_match_counter += 1
+            
+            max_check_iterator += 1
+
+        if instruction_match_counter >= (max_check_iterator / 2):
+            self.format = "bl"
+        else:
+            self.format = "bc"
 
 if __name__ == "__main__":
     import argparse
@@ -284,7 +293,7 @@ if __name__ == "__main__":
     arg = parser.parse_args()
 
     if os.path.isfile(arg.src):
-        if (arg.src[-4:] == ".txt" or arg.src[-2:] == ".b"):
+        if arg.src[-4:] == ".txt" or arg.src[-2:] == ".b":
             with open(arg.src, "r", encoding="ascii") as f:
                 lines = f.readlines()
 
@@ -294,6 +303,13 @@ if __name__ == "__main__":
                 brainfuck_code += line
 
             BrainFuck(brainfuck_code)
+        elif (arg.src[-4:] == ".png"):
+            format = WhichBrainxPic(arg.src).format
+
+            if format == "bl":
+                BrainLoller(arg.src)
+            else:
+                BrainCopter(arg.src)
         else:
             print("src: unknown source file")
     else:
