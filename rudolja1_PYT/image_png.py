@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 import zlib
 
+#
+# Exceptions
+#
 
 class PNGWrongHeaderError(Exception):
     """exception - loaded file is not probably PNG image"""
@@ -21,7 +24,12 @@ class PNGFilterError(Exception):
     pass
 
 
-class PngReader():
+#
+# PNGReader - class to transform raw bytes of the PNG image into a list of pixels
+#
+
+
+class PNGReader():
     """class for work with PNG images"""
     
     def __init__(self, filepath):
@@ -233,6 +241,10 @@ class PngReader():
             bitmap.append(row)
 
         return bitmap
+
+#
+# PNGWriter - class to construct a PNG image from a list of pixels
+#
 
 
 class PNGWriter():

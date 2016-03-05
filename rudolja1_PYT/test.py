@@ -106,7 +106,7 @@ class TestPNG(unittest.TestCase):
     """testing of correct loading of a subset of PNG images"""
     
     def setUp(self):
-        self.png = image_png.PngReader
+        self.png = image_png.PNGReader
         # hide stdout
         self.out = sys.stdout
         sys.stdout = FakeStdOut()

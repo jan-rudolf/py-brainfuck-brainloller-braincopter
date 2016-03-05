@@ -147,7 +147,7 @@ class Brainloller():
         self.brainfuck_source_code = str()
 
         # image data
-        bitmap = image_png.PngReader(filename).rgb
+        bitmap = image_png.PNGReader(filename).rgb
         bitmap_width = len(bitmap[0])
         bitmap_height = len(bitmap)
 
@@ -224,7 +224,7 @@ class Braincopter():
         self.brainfuck_source_code = str()
 
         # image data
-        bitmap = image_png.PngReader(filename).rgb
+        bitmap = image_png.PNGReader(filename).rgb
         bitmap_width = len(bitmap[0])
         bitmap_height = len(bitmap)
 
@@ -306,7 +306,7 @@ class WhichBrainxPic():
             (128, 128, 0)
         ]
 
-        bitmap = image_png.PngReader(src).rgb
+        bitmap = image_png.PNGReader(src).rgb
 
         for pixel in bitmap[0]:
             if pixel in brainloller_instructions:

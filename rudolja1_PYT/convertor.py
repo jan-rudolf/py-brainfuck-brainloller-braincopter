@@ -181,6 +181,7 @@ class Brainfuck2Braincopter():
 
 
 def bf2bl(src, dst):
+    # Brainfuck to Brainloller
     brainfuck_source_code = str()
 
     with open(src, "r", encoding="ascii") as f:
@@ -195,7 +196,7 @@ def bf2bl(src, dst):
 
 
 def bl2bf(src, dst):
-    #otestovat existence souboru
+    # Brainloller to Brainfuck
     program = brainx.Brainloller(src, run=False)
 
     with open(dst, "w", encoding="ascii") as f:
@@ -203,6 +204,7 @@ def bl2bf(src, dst):
 
 
 def bc2bf(src, dst):
+    # Braincopter to Brainfuck
     program = brainx.Braincopter(src, run=False)
 
     with open(dst, "w", encoding="ascii") as f:
@@ -210,6 +212,7 @@ def bc2bf(src, dst):
 
 
 def bf2bc(src, dst):
+    # Brainfuck to Braincopter
     brainfuck_code = str()
 
     with open(src, "r", encoding="ascii") as f:
@@ -218,7 +221,7 @@ def bf2bc(src, dst):
     for line in lines:
         brainfuck_code += line
 
-    bitmap = image_png.PngReader(dst).rgb
+    bitmap = image_png.PNGReader(dst).rgb
 
     bitmap = Brainfuck2Braincopter(bitmap, brainfuck_code).bitmap
 
@@ -226,15 +229,17 @@ def bf2bc(src, dst):
 
 
 def bl2bc(src, dst):
+    # Brainloller to Braincopter
     brainfuck_code = brainx.Brainloller(src, run=False).data
 
-    bitmap = image_png.PngReader(dst).rgb
+    bitmap = image_png.PNGReader(dst).rgb
     bitmap = Brainfuck2Braincopter(bitmap, brainfuck_code).bitmap
 
     image_png.PNGWriter(bitmap, dst)
 
 
 def bc2bl(src, dst):
+    # Braincopter to Brainloller
     brainfuck_code = brainx.Braincopter(src, run=False).data
 
     bitmap = Brainfuck2Brainloller(brainfuck_code).bitmap
