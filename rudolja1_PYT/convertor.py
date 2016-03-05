@@ -248,6 +248,7 @@ def bc2bl(src, dst):
 
 
 if __name__ == "__main__":
+    # a dict of conversion functions
     convert_functions = {
         "bf2bl": bf2bl,
         "bl2bf": bl2bf,
@@ -257,25 +258,27 @@ if __name__ == "__main__":
         "bc2bl": bc2bl
     }
 
+    format_from = str()
+    format_to = str()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("src", help="path to the source file")
     parser.add_argument("dst", help="path to the destination file")
     arg = parser.parse_args()
 
-    if arg.src[-4:] == '.png' or arg.src[-4:] == '.txt' or arg.src[-2:] == '.b':
-        if arg.src[-4:] == '.png':
+    if arg.src.endswith('.png') or arg.src.endswith('.txt') or arg.src.endswith('.b'):
+        if arg.src.endswith('.png'):
             format_from = brainx.WhichBrainxPic(arg.src).format
 
-        if arg.src[-4:] == '.txt' or arg.src[-2:] == '.b':
+        if arg.src.endswith('.txt') or arg.src.endswith('.b'):
             format_from = "bf"
 
     else:
         print("src: unknown source file")
 
-    if arg.dst[-4:] == '.png' or arg.dst[-4:] == '.txt' or arg.dst[-2:] == '.b':
-        format_to = ""
+    if arg.dst.endswith('.png') or arg.dst.endswith('.txt') or arg.dst.endswith('.b'):
 
-        if arg.dst[-4:] == '.png':
+        if arg.dst.endswith('.png'):
             if os.path.isfile(arg.dst):
                 format_to = "bc"
 
@@ -284,7 +287,7 @@ if __name__ == "__main__":
             elif len(format_to) == 0:
                 format_to = "bl"
 
-        if arg.dst[-4:] == '.txt' or arg.dst[-2:] == '.b':
+        if arg.dst.endswith('.txt') or arg.dst.endswith('.b'):
             format_to = "bf"
     else:
         print("dst: unknown source file")

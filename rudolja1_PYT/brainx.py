@@ -328,7 +328,7 @@ if __name__ == "__main__":
     arg = parser.parse_args()
 
     if os.path.isfile(arg.src):
-        if arg.src[-4:] == ".txt" or arg.src[-2:] == ".b":
+        if arg.src.endswith(".txt") or arg.src.endswith(".b"):
             brainfuck_source_code = str()
 
             with open(arg.src, "r", encoding="ascii") as f:
@@ -338,7 +338,7 @@ if __name__ == "__main__":
                 brainfuck_source_code += line
 
             Brainfuck(brainfuck_source_code)
-        elif arg.src[-4:] == ".png":
+        elif arg.src.endswith(".png"):
             format_ = WhichBrainxPic(arg.src).format
 
             if format_ == "bl":
