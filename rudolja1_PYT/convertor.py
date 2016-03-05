@@ -9,32 +9,33 @@ import image_png
 
 
 class Brainfuck2Brainloller():
+    """Class for conversion from Brainfuck to Brainloller."""
     def __init__(self, brainfuck_source_code):
         data = list()
 
-        for command in brainfuck_source_code:
-            if command == '>':
+        for instruction in brainfuck_source_code:
+            if instruction == '>':
                 data.append([255, 0, 0])
 
-            if command == '<':
+            if instruction == '<':
                 data.append([128, 0, 0])
 
-            if command == '+':
+            if instruction == '+':
                 data.append([0, 255, 0])
 
-            if command == '-':
+            if instruction == '-':
                 data.append([0, 128, 0])
 
-            if command == '.':
+            if instruction == '.':
                 data.append([0, 0, 255])
 
-            if command == ',':
+            if instruction == ',':
                 data.append([0, 0, 128])
 
-            if command == '[':
+            if instruction == '[':
                 data.append([255, 255, 0])
 
-            if command == ']':
+            if instruction == ']':
                 data.append([128, 128, 0])
 
         row = list()
@@ -87,6 +88,7 @@ class Brainfuck2Brainloller():
 
 
 class Brainfuck2Braincopter():
+    """Class for conversion from Brainfuck to Braincopter"""
     def __init__(self, bitmap, brainfuck_source_code):
         self.transition_table = {
             '>': 0,
@@ -170,6 +172,7 @@ class Brainfuck2Braincopter():
                 column -= 1
 
     def brainfuck_pixel_encode(self, value, pixel):
+        """Method for encoding Brainfuck's instruction into the pixel without significant change of color."""
         r = pixel[0]
         g = pixel[1]
         b = pixel[2]
@@ -179,9 +182,13 @@ class Brainfuck2Braincopter():
 
         return r, g, b
 
+#
+# Help functions
+#
+
 
 def bf2bl(src, dst):
-    # Brainfuck to Brainloller
+    """Help function, if it's called the conversion from Brainfuck to Brainloller from the command line. """
     brainfuck_source_code = str()
 
     with open(src, "r", encoding="ascii") as f:
@@ -196,7 +203,7 @@ def bf2bl(src, dst):
 
 
 def bl2bf(src, dst):
-    # Brainloller to Brainfuck
+    """Help function, if it's called the conversion from Brainloller to Brainfuck from the command line. """
     program = brainx.Brainloller(src, run=False)
 
     with open(dst, "w", encoding="ascii") as f:
@@ -204,7 +211,7 @@ def bl2bf(src, dst):
 
 
 def bc2bf(src, dst):
-    # Braincopter to Brainfuck
+    """Help function, if it's called the conversion from Braincopter to Brainfuck from the command line. """
     program = brainx.Braincopter(src, run=False)
 
     with open(dst, "w", encoding="ascii") as f:
@@ -212,7 +219,7 @@ def bc2bf(src, dst):
 
 
 def bf2bc(src, dst):
-    # Brainfuck to Braincopter
+    """Help function, if it's called the conversion from Brainfuck to Braincopter from the command line. """
     brainfuck_code = str()
 
     with open(src, "r", encoding="ascii") as f:
@@ -229,7 +236,7 @@ def bf2bc(src, dst):
 
 
 def bl2bc(src, dst):
-    # Brainloller to Braincopter
+    """Help function, if it's called the conversion from Brainloller to Braincopter from the command line. """
     brainfuck_code = brainx.Brainloller(src, run=False).data
 
     bitmap = image_png.PNGReader(dst).rgb
@@ -239,13 +246,16 @@ def bl2bc(src, dst):
 
 
 def bc2bl(src, dst):
-    # Braincopter to Brainloller
+    """Help function, if it's called the conversion from Braincopter to Brainloller from the command line. """
     brainfuck_code = brainx.Braincopter(src, run=False).data
 
     bitmap = Brainfuck2Brainloller(brainfuck_code).bitmap
 
     image_png.PNGWriter(bitmap, dst)
 
+#
+# ensure to be able to run the script from command line
+#
 
 if __name__ == "__main__":
     # a dict of conversion functions

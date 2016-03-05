@@ -20,7 +20,7 @@ class FakeStdOut:
 #
 
 class TestBrainfuck(unittest.TestCase):
-    """testing behavior of Brainfuck interpreter"""
+    """Testing behavior of the Brainfuck interpreter."""
     
     def setUp(self):
         self.BF = brainx.Brainfuck
@@ -32,49 +32,49 @@ class TestBrainfuck(unittest.TestCase):
         sys.stdout = self.out
    
     def test_bf_01(self):
-        """null actual memory cell"""
+        """Null actual memory cell."""
         program = self.BF('[-]', memory=b'\x03\x02', memory_pointer=1)
         self.assertEqual(program.get_memory(), b'\x03\x00')
     
     def test_bf_02(self):
-        """null each memory cell from actual to the left"""
+        """Null each memory cell from actual to the left."""
         program = self.BF('[[-]<]', memory=b'\x03\x03\x00\x02\x02', memory_pointer=4)
         self.assertEqual(program.get_memory(), b'\x03\x03\x00\x00\x00')
     
     def test_bf_03(self):
-        """move to the first not null memory cell on left"""
+        """Move to the first not null memory cell on left."""
         program = self.BF('[<]', memory=b'\x03\x03\x00\x02\x02', memory_pointer=4)
         self.assertEqual(program.memory_pointer, 2)
     
     def test_bf_04(self):
-        """move to the first not null memory cell on right"""
+        """Move to the first not null memory cell on right."""
         program = self.BF('[>]', memory=b'\x03\x03\x00\x02\x02')
         self.assertEqual(program.memory_pointer, 2)
     
     def test_bf_05(self):
-        """destructive addition of the actual memory cell to the next one"""
+        """Destructive addition of the actual memory cell to the next one."""
         program = self.BF('[>+<-]', memory=b'\x03\x03')
         self.assertEqual(program.get_memory(), b'\x00\x06')
     
     def test_bf_06(self):
-        """nondestructive addition of actual memory cell to the next one"""
+        """Nondestructive addition of actual memory cell to the next one."""
         program = self.BF('[>+>+<<-]>>[<<+>>-]', memory=b'\x03\x03')
         self.assertEqual(program.get_memory(), b'\x03\x06\x00')
     
     def test_bf_07(self):
-        """destructive subtraction of the actual memory cell from the next one"""
+        """Destructive subtraction of the actual memory cell from the next one."""
         program = self.BF('[>-<-]', memory=b'\x03\x05')
         self.assertEqual(program.get_memory(), b'\x00\x02')
     
     def test_bf_11(self):
-        r"""HelloWorld with \n"""
+        r"""HelloWorld with \n."""
         with open('test_data/hello1.b', encoding='ascii' ) as stream:
             data = stream.read()
         program = self.BF(data)
         self.assertEqual(program.output, 'Hello World!\n')
     
     def test_bf_12(self):
-        r"""HelloWorld without \n"""
+        r"""HelloWorld without \n."""
         with open( 'test_data/hello2.b', encoding='ascii' ) as stream:
             data = stream.read()
         program = self.BF(data)
@@ -82,7 +82,7 @@ class TestBrainfuck(unittest.TestCase):
 
 
 class TestBrainfuckWithInput(unittest.TestCase):
-    """testing of behavior of Brainfuck interpreter for programs with an input"""
+    """Testing behavior of the Brainfuck interpreter for programs with an input."""
     
     def setUp(self):
         self.BF = brainx.Brainfuck
@@ -94,7 +94,7 @@ class TestBrainfuckWithInput(unittest.TestCase):
         sys.stdout = self.out
     
     def test_bf_input_2(self):
-        """numwarp.b for input '123'"""
+        """numwarp.b for input '123'."""
         with open('test_data/numwarp_input.b', encoding='ascii') as stream:
             data = stream.read()
         
@@ -103,7 +103,7 @@ class TestBrainfuckWithInput(unittest.TestCase):
 
 
 class TestPNG(unittest.TestCase):
-    """testing of correct loading of a subset of PNG images"""
+    """Testing of correct loading of a subset of PNG images."""
     
     def setUp(self):
         self.png = image_png.PNGReader
@@ -115,15 +115,15 @@ class TestPNG(unittest.TestCase):
         sys.stdout = self.out
     
     def test_png_01(self):
-        """we can do only PNG"""
+        """We can do only PNG test."""
         self.assertRaises(image_png.PNGWrongHeaderError, self.png, 'test_data/sachovnice.jpg')
     
     def test_png_02(self):
-        """we can do only some PNGs"""
+        """We can do only some PNGs test."""
         self.assertRaises(image_png.PNGNotImplementedError, self.png, 'test_data/sachovnice_paleta.png')
     
     def test_png_03(self):
-        """loading of simple PNG image"""
+        """Loading of a simple PNG image test."""
         image = self.png('test_data/sachovnice.png')
         self.assertEqual(image.rgb,
                          [
@@ -134,7 +134,7 @@ class TestPNG(unittest.TestCase):
 
 
 class TestBrainloller(unittest.TestCase):
-    """testing behavior of Brainloller interpret"""
+    """Testing behavior of the Brainloller interpreter."""
     
     def setUp(self):
         self.BF = brainx.Brainfuck
@@ -147,7 +147,7 @@ class TestBrainloller(unittest.TestCase):
         sys.stdout = self.out
     
     def test_bl_1a(self):
-        """loading of data from HelloWorld.png"""
+        """Loading of data from HelloWorld.png."""
         bl = self.BL('test_data/HelloWorld.png')
         self.assertEqual(
             bl.brainfuck_source_code,
@@ -158,7 +158,7 @@ class TestBrainloller(unittest.TestCase):
         )
     
     def test_bl_1b(self):
-        """run program from HelloWorld.png"""
+        """Run program from HelloWorld.png."""
         bl = self.BL('test_data/HelloWorld.png')
         self.assertEqual(bl.program.output, 'Hello World!')
 
@@ -166,5 +166,6 @@ class TestBrainloller(unittest.TestCase):
 #
 # ensure to be able to run the script from command line
 #
+
 if __name__ == '__main__':
     unittest.main()

@@ -6,31 +6,32 @@ import zlib
 # Exceptions
 #
 
+
 class PNGWrongHeaderError(Exception):
-    """exception - loaded file is not probably PNG image"""
+    """Exception - loaded file is not probably PNG image."""
     pass
 
 
 class PNGNotImplementedError(Exception):
-    """exception - PNG structure we cannot handle"""
+    """Exception - PNG structure we cannot handle."""
     pass
+
 
 class PNGReadingError(Exception):
-    """exception - error reading data"""
+    """Exception - error reading data."""
     pass
+
 
 class PNGFilterError(Exception):
-    """exception - error parsing data"""
+    """Exception - error parsing data."""
     pass
 
-
 #
-# PNGReader - class to transform raw bytes of the PNG image into a list of pixels
+# Classes
 #
-
 
 class PNGReader():
-    """class for work with PNG images"""
+    """Class to transform raw bytes of the PNG image into a list of pixels."""
     
     def __init__(self, filepath):
         # image RGB data is list of list of lines
@@ -112,8 +113,7 @@ class PNGReader():
             self.rgb = self.handle_raw_data()
 
     def filter_4_paeth(self, a, b, c):
-        # The Paeth filter
-        # http://www.w3.org/TR/PNG-Filters.html
+        """The Paeth PNG filter (http://www.w3.org/TR/PNG-Filters.html)."""
         p = a + b - c
         pa = abs(p - a)
         pb = abs(p - b)
@@ -242,12 +242,9 @@ class PNGReader():
 
         return bitmap
 
-#
-# PNGWriter - class to construct a PNG image from a list of pixels
-#
-
 
 class PNGWriter():
+    """Class to construct a PNG image from a list of pixels."""
     def __init__(self, bitmap, output_file):
         width = len(bitmap[0])
         height = len(bitmap)

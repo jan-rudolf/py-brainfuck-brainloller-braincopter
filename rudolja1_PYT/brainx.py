@@ -6,10 +6,9 @@ import image_png
 
 
 class Brainfuck:
-    """the interpret of Brainfuck"""
-
+    """The interpreter of Brainfuck language."""
     def __init__(self, source_code, memory=b'\x00', memory_pointer=0):
-        """init method of the interpreter"""
+        """__init__ method/constructor."""
         self.input = str()
         self.output = str()
         # instruction pointer - initially on 0 address
@@ -22,7 +21,7 @@ class Brainfuck:
         self.memory = bytearray(memory)
         self.memory_pointer = memory_pointer
 
-        self.input_check()
+        self.strip_comments()
 
         while instruction_pointer < len(self.instruction_memory):
             # get actual instruction from instruction memory
@@ -119,7 +118,8 @@ class Brainfuck:
             #move instruction pointer to next address
             instruction_pointer += 1
 
-    def input_check(self):
+    def strip_comments(self):
+        """Delete comments from the source code of Brainfuck."""
         input_loading = False
 
         for instruction in self.instruction_memory:
@@ -131,18 +131,17 @@ class Brainfuck:
                     input_loading = False
                 else:
                     input_loading = True
-    #
-    # for test need
-    #
+
     def get_memory(self):
+        """Get the memory of the interpreter."""
         return bytes(self.memory)
 
 
 class Brainloller():
-    """class for Brainloller"""
+    """The interpreter of Brainloller. Transform a PNG image into Brainfuck source code nad run it."""
     
     def __init__(self, filename, run=True):
-        """init"""
+        """__init__ method/constructor."""
         # Brainfuck source code
         self.brainfuck_source_code = str()
 
@@ -216,10 +215,10 @@ class Brainloller():
 
 
 class Braincopter():
-    """class Braincopter"""
+    """The interpreter of Braincopter. Extract Brainfuck source code from a PNG image and run it."""
     
     def __init__(self, filename, run=True):
-        """init"""
+        """__init__ method/constructor."""
         # Brainfuck source code
         self.brainfuck_source_code = str()
 
@@ -290,7 +289,14 @@ class Braincopter():
 
 
 class WhichBrainxPic():
+    """Class for naive statistic classification of Brainfuck dialect based on pixels."""
     def __init__(self, src):
+        """
+        __init__ method/constructor.
+
+        :param src:
+        :return:
+        """""
         self.format = str()
 
         counter_match = 0
@@ -317,6 +323,9 @@ class WhichBrainxPic():
         else:
             self.format = "bc"
 
+#
+# ensure to be able to run the script from command line
+#
 
 if __name__ == "__main__":
     import argparse
