@@ -5,7 +5,7 @@ import sys
 import image_png
 
 
-class BrainFuck:
+class Brainfuck:
     """the interpret of Brainfuck"""
 
     def __init__(self, source_code, memory=b'\x00', memory_pointer=0):
@@ -138,7 +138,7 @@ class BrainFuck:
         return bytes(self.memory)
 
 
-class BrainLoller():
+class Brainloller():
     """class for Brainloller"""
     
     def __init__(self, filename, run=True):
@@ -212,11 +212,11 @@ class BrainLoller():
                 column -= 1
 
         if run:
-            self.program = BrainFuck(self.brainfuck_source_code)
+            self.program = Brainfuck(self.brainfuck_source_code)
 
 
-class BrainCopter():
-    """class BrainCopter"""
+class Braincopter():
+    """class Braincopter"""
     
     def __init__(self, filename, run=True):
         """init"""
@@ -286,7 +286,7 @@ class BrainCopter():
                 column -= 1
 
         if run:
-            self.program = BrainFuck(self.brainfuck_source_code)
+            self.program = Brainfuck(self.brainfuck_source_code)
 
 
 class WhichBrainxPic():
@@ -337,17 +337,17 @@ if __name__ == "__main__":
             for line in lines:
                 brainfuck_source_code += line
 
-            BrainFuck(brainfuck_source_code)
+            Brainfuck(brainfuck_source_code)
         elif arg.src[-4:] == ".png":
             format_ = WhichBrainxPic(arg.src).format
 
             if format_ == "bl":
-                BrainLoller(arg.src)
+                Brainloller(arg.src)
             else:
-                BrainCopter(arg.src)
+                Braincopter(arg.src)
         else:
             print("src: unknown source file")
     else:
-        BrainFuck(arg.src)
+        Brainfuck(arg.src)
 
 

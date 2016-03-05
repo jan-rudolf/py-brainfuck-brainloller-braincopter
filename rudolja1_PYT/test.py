@@ -23,7 +23,7 @@ class TestBrainfuck(unittest.TestCase):
     """testing behavior of Brainfuck interpreter"""
     
     def setUp(self):
-        self.BF = brainx.BrainFuck
+        self.BF = brainx.Brainfuck
         #hide stdout
         self.out = sys.stdout
         sys.stdout = FakeStdOut()
@@ -68,7 +68,7 @@ class TestBrainfuck(unittest.TestCase):
     
     def test_bf_11(self):
         r"""HelloWorld with \n"""
-        with open( 'test_data/hello1.b', encoding='ascii' ) as stream:
+        with open('test_data/hello1.b', encoding='ascii' ) as stream:
             data = stream.read()
         program = self.BF(data)
         self.assertEqual(program.output, 'Hello World!\n')
@@ -85,7 +85,7 @@ class TestBrainfuckWithInput(unittest.TestCase):
     """testing of behavior of Brainfuck interpreter for programs with an input"""
     
     def setUp(self):
-        self.BF = brainx.BrainFuck
+        self.BF = brainx.Brainfuck
         # hide stdout
         self.out = sys.stdout
         sys.stdout = FakeStdOut()
@@ -137,8 +137,8 @@ class TestBrainloller(unittest.TestCase):
     """testing behavior of Brainloller interpret"""
     
     def setUp(self):
-        self.BF = brainx.BrainFuck
-        self.BL = brainx.BrainLoller
+        self.BF = brainx.Brainfuck
+        self.BL = brainx.Brainloller
         # hide stdout
         self.out = sys.stdout
         sys.stdout = FakeStdOut()
@@ -148,9 +148,9 @@ class TestBrainloller(unittest.TestCase):
     
     def test_bl_1a(self):
         """loading of data from HelloWorld.png"""
-        objekt = self.BL('test_data/HelloWorld.png')
+        bl = self.BL('test_data/HelloWorld.png')
         self.assertEqual(
-            objekt.brainfuck_source_code,
+            bl.brainfuck_source_code,
             '>+++++++++[<++++++++>-]<.>+++++++[<++++>'
             '-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>'
             '>>++++++++++[<+++++++++>-]<---.<<<<.+++.--'
@@ -159,8 +159,8 @@ class TestBrainloller(unittest.TestCase):
     
     def test_bl_1b(self):
         """run program from HelloWorld.png"""
-        objekt = self.BL('test_data/HelloWorld.png')
-        self.assertEqual(objekt.program.output, 'Hello World!')
+        bl = self.BL('test_data/HelloWorld.png')
+        self.assertEqual(bl.program.output, 'Hello World!')
 
 
 #

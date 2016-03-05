@@ -25,30 +25,30 @@ class PngReader():
     """class for work with PNG images"""
     
     def __init__(self, filepath):
-        
-        # RGB data of an image is list of list of lines
+        # image RGB data is list of list of lines
         # every pixel on the list is a triple (R, G, B)
         self.rgb = []
 
+        # settings of the image
         self.settings = dict()
+
+        # image rawdata
         self.rawdata = b''
 
         with open(filepath, "rb") as f:
             data = f.read(8)
 
-            # png header test
+            # PNG header test
             if data != b'\x89PNG\r\n\x1a\n':
                 raise PNGWrongHeaderError()
 
-            # IHDR
-            bytes = f.read(4)
+            # get IHDR
+            bytes_ = f.read(4)
 
-            # length
-            chunk_data_length = int.from_bytes(bytes, 'big')
+            chunk_data_length = int.from_bytes(bytes_, 'big')
 
             if chunk_data_length != 13:
                 # if it's not 13 bytes, it's not the IHDR chunk or a valid IHDR chunk
-
                 raise PNGReadingError()
 
             chunk_type = f.read(4)
@@ -57,6 +57,7 @@ class PngReader():
                 raise PNGReadingError("did not find IHDR")
     
             chunk_data = f.read(chunk_data_length)
+
             chunk_crc = int.from_bytes(f.read(4), "big")
 
             if chunk_crc != zlib.crc32(chunk_type + chunk_data):
@@ -79,14 +80,14 @@ class PngReader():
             ):
                 raise PNGNotImplementedError()
 
-            # reading other chunks
             while 1:
-                bytes = f.read(4)
+                # reading other chunks
+                bytes_ = f.read(4)
 
-                if not bytes:
+                if not bytes_:
                     break
 
-                chunk_data_length = int.from_bytes(bytes, "big")
+                chunk_data_length = int.from_bytes(bytes_, "big")
                 chunk_type = f.read(4)
                 chunk_data = f.read(chunk_data_length)
                 chunk_crc = int.from_bytes(f.read(4), "big")
@@ -96,32 +97,42 @@ class PngReader():
 
                 if chunk_type == b"IDAT":
                     self.rawdata += chunk_data
+
                 elif chunk_type == b"IEND":
                     self.rawdata = zlib.decompress(self.rawdata)
 
-            self.rgb = self.handleRawData()
+            self.rgb = self.handle_raw_data()
 
-    def filter4Paeth(self, a, b, c):
-            p = a + b - c
-            pa = abs(p - a)
-            pb = abs(p - b)
-            pc = abs(p - c)
+    def filter_4_paeth(self, a, b, c):
+        # The Paeth filter
+        # http://www.w3.org/TR/PNG-Filters.html
+        p = a + b - c
+        pa = abs(p - a)
+        pb = abs(p - b)
+        pc = abs(p - c)
 
-            if pa <= pb and pa <= pc:
-                return a
-            elif pb <= pc:
-                return b
-            else:
-                return c
+        if pa <= pb and pa <= pc:
+            return a
+        elif pb <= pc:
+            return b
+        else:
+            return c
 
-    def handleRawData(self):
+    def handle_raw_data(self):
         bitmap = list()
-        row_counter = 0
-        row_size = (self.settings["width"] * 3) + 1 
+
+        # list of rows
         row = list()
+        row_counter = 0
+        row_size = (self.settings["width"] * 3) + 1
+
+        # list of pixels
         pixel = list()
         pixel_counter = 1
-        filtration = 0
+
+        # type of the filter
+        # https://www.w3.org/TR/PNG-Filters.html
+        filter_ = 0
 
         for byte in self.rawdata:
             if row_counter % row_size == 0:
@@ -129,12 +140,16 @@ class PngReader():
                     bitmap.append(row)
 
                 row = list()
-                filtration = byte
+
+                filter_ = byte
+
             else:
                 if pixel_counter % 3 == 0:
+
                     pixel.append(byte)
                 
-                    if filtration == 1:
+                    if filter_ == 1:
+                        # filter type: Sub
                         a_index = len(row) - 1
                         if a_index < 0:
                             a = [0, 0, 0]
@@ -144,7 +159,9 @@ class PngReader():
                         pixel[0] = (a[0] + pixel[0]) % 256
                         pixel[1] = (a[1] + pixel[1]) % 256
                         pixel[2] = (a[2] + pixel[2]) % 256
-                    elif filtration == 2:
+
+                    elif filter_ == 2:
+                        # filter type: Up
                         b_index = len(bitmap) - 1
                         if b_index < 0:
                             b = [0, 0, 0]
@@ -154,7 +171,8 @@ class PngReader():
                         pixel[0] = (b[0] + pixel[0]) % 256
                         pixel[1] = (b[1] + pixel[1]) % 256
                         pixel[2] = (b[2] + pixel[2]) % 256
-                    elif filtration == 3:
+                    elif filter_ == 3:
+                        # filter type: Average
                         a_index = len(row) - 1
                         if a_index < 0:
                             a = [0, 0, 0]
@@ -170,7 +188,8 @@ class PngReader():
                         pixel[0] = (pixel[0] + (a[0] + b[0]) // 2) % 256
                         pixel[1] = (pixel[1] + (a[1] + b[1]) // 2) % 256
                         pixel[2] = (pixel[2] + (a[2] + b[2]) // 2) % 256
-                    elif filtration == 4:
+                    elif filter_ == 4:
+                        # filter type: Paeth
                         a_index = len(row) - 1
                         if a_index < 0:
                             a = [0, 0, 0]
@@ -189,7 +208,11 @@ class PngReader():
                         else:
                             c = bitmap[c_index[0]][c_index[1]]
 
-                        p = [self.filter4Paeth(a[0], b[0], c[0]), self.filter4Paeth(a[1], b[1], c[1]), self.filter4Paeth(a[2], b[2], c[2])]
+                        p = [
+                            self.filter_4_paeth(a[0], b[0], c[0]),
+                            self.filter_4_paeth(a[1], b[1], c[1]),
+                            self.filter_4_paeth(a[2], b[2], c[2])
+                        ]
 
                         pixel[0] = (p[0] + pixel[0]) % 256
                         pixel[1] = (p[1] + pixel[1]) % 256
@@ -198,6 +221,7 @@ class PngReader():
                     row.append(tuple(pixel))
 
                     pixel = list()
+
                 else:
                     pixel.append(byte)
 
@@ -215,6 +239,8 @@ class PNGWriter():
     def __init__(self, bitmap, output_file):
         width = len(bitmap[0])
         height = len(bitmap)
+
+        # setting of the image
         self.settings = {
             "width": width,
             "height": height,
@@ -224,7 +250,10 @@ class PNGWriter():
             "filter_method": 0,
             "interlace_method": 0
         }
-        self.bitmap_in_png = list() 
+
+        self.bitmap = list()
+
+        # PNG headers
         self.IDAT = b''
         self.IHDR = b'IHDR' + \
                     self.settings["width"].to_bytes(4, 'big') + \
@@ -237,14 +266,12 @@ class PNGWriter():
         self.IHDR = b'\x00\x00\x00\r' + self.IHDR + zlib.crc32(self.IHDR).to_bytes(4, 'big')
         self.IEND = b'\x00\x00\x00\x00' + b'IEND' + b'' + b'\xaeB`\x82'
 
-        # adding info about filtration method
-
+        # adding info about the filter type
         for row in bitmap:
-            self.bitmap_in_png.append([self.settings["filter_method"], row])
+            self.bitmap.append([self.settings["filter_method"], row])
 
         # converting list into bytes
-
-        for row in self.bitmap_in_png:
+        for row in self.bitmap:
             self.IDAT += row[0].to_bytes(1, 'big')
 
             for pixel in row[1]:
@@ -254,6 +281,7 @@ class PNGWriter():
 
         compressed_data = zlib.compress(self.IDAT)
 
+        # construct of the IDAT header
         self.IDAT = len(compressed_data).to_bytes(4, 'big') + \
                     b'IDAT' + \
                     compressed_data + \

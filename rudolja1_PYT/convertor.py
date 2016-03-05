@@ -108,7 +108,7 @@ class Brainfuck2Braincopter():
 
         if len(self.brainfuck) > (self.bitmap_height * self.bitmap_width):
             print(
-                "warning: BrainFuck source code is longer than this picture's bitmap, it will not encode the whole code"
+                "warning: Brainfuck source code is longer than this picture's bitmap, it will not encode the whole code"
             )
 
         row = 0
@@ -196,14 +196,14 @@ def bf2bl(src, dst):
 
 def bl2bf(src, dst):
     #otestovat existence souboru
-    program = brainx.BrainLoller(src, run=False)
+    program = brainx.Brainloller(src, run=False)
 
     with open(dst, "w", encoding="ascii") as f:
         f.write(program.data)
 
 
 def bc2bf(src, dst):
-    program = brainx.BrainCopter(src, run=False)
+    program = brainx.Braincopter(src, run=False)
 
     with open(dst, "w", encoding="ascii") as f:
         f.write(program.data)
@@ -226,7 +226,7 @@ def bf2bc(src, dst):
 
 
 def bl2bc(src, dst):
-    brainfuck_code = brainx.BrainLoller(src, run=False).data
+    brainfuck_code = brainx.Brainloller(src, run=False).data
 
     bitmap = image_png.PngReader(dst).rgb
     bitmap = Brainfuck2Braincopter(bitmap, brainfuck_code).bitmap
@@ -235,7 +235,7 @@ def bl2bc(src, dst):
 
 
 def bc2bl(src, dst):
-    brainfuck_code = brainx.BrainCopter(src, run=False).data
+    brainfuck_code = brainx.Braincopter(src, run=False).data
 
     bitmap = Brainfuck2Brainloller(brainfuck_code).bitmap
 
