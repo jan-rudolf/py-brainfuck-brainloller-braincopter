@@ -33,7 +33,7 @@ class PNGFilterError(Exception):
 class PNGReader():
     """Class to transform raw bytes of the PNG image into a list of pixels."""
     
-    def __init__(self, filepath):
+    def __init__(self, filepath: str) -> None:
         # image RGB data is list of list of lines
         # every pixel on the list is a triple (R, G, B)
         self.rgb = []
@@ -112,7 +112,7 @@ class PNGReader():
 
             self.rgb = self.handle_raw_data()
 
-    def filter_4_paeth(self, a, b, c):
+    def filter_4_paeth(self, a: int, b: int, c: int) -> int:
         """The Paeth PNG filter (http://www.w3.org/TR/PNG-Filters.html)."""
         p = a + b - c
         pa = abs(p - a)
@@ -126,7 +126,7 @@ class PNGReader():
         else:
             return c
 
-    def handle_raw_data(self):
+    def handle_raw_data(self) -> None:
         bitmap = list()
 
         # list of rows
@@ -245,7 +245,7 @@ class PNGReader():
 
 class PNGWriter():
     """Class to construct a PNG image from a list of pixels."""
-    def __init__(self, bitmap, output_file):
+    def __init__(self, bitmap: list, output_file: str) -> None:
         width = len(bitmap[0])
         height = len(bitmap)
 

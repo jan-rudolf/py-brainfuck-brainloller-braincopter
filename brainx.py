@@ -7,7 +7,7 @@ import image_png
 
 class Brainfuck:
     """The interpreter of Brainfuck language."""
-    def __init__(self, source_code, memory=b'\x00', memory_pointer=0):
+    def __init__(self, source_code: str, memory: bytes=b'\x00', memory_pointer: int=0) -> str:
         """__init__ method/constructor."""
         self.input = str()
         self.output = str()
@@ -118,7 +118,7 @@ class Brainfuck:
             #move instruction pointer to next address
             instruction_pointer += 1
 
-    def strip_comments(self):
+    def strip_comments(self) -> None:
         """Delete comments from the source code of Brainfuck."""
         input_loading = False
 
@@ -132,7 +132,7 @@ class Brainfuck:
                 else:
                     input_loading = True
 
-    def get_memory(self):
+    def get_memory(self) -> bytes:
         """Get the memory of the interpreter."""
         return bytes(self.memory)
 
@@ -140,7 +140,7 @@ class Brainfuck:
 class Brainloller():
     """The interpreter of Brainloller. Transform a PNG image into Brainfuck source code nad run it."""
     
-    def __init__(self, filename, run=True):
+    def __init__(self, filename: str, run: bool=True) -> str:
         """__init__ method/constructor."""
         # Brainfuck source code
         self.brainfuck_source_code = str()
@@ -217,7 +217,7 @@ class Brainloller():
 class Braincopter():
     """The interpreter of Braincopter. Extract Brainfuck source code from a PNG image and run it."""
     
-    def __init__(self, filename, run=True):
+    def __init__(self, filename: str, run: bool=True) -> str:
         """__init__ method/constructor."""
         # Brainfuck source code
         self.brainfuck_source_code = str()
@@ -290,13 +290,8 @@ class Braincopter():
 
 class WhichBrainxPic():
     """Class for naive statistic classification of Brainfuck dialect based on pixels."""
-    def __init__(self, src):
-        """
-        __init__ method/constructor.
-
-        :param src:
-        :return:
-        """""
+    def __init__(self, src: list) -> None:
+        """__init__ method/constructor."""
         self.format = str()
 
         counter_match = 0

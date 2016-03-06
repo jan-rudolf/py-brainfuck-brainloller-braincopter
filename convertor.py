@@ -10,7 +10,7 @@ import image_png
 
 class Brainfuck2Brainloller():
     """Class for conversion from Brainfuck to Brainloller."""
-    def __init__(self, brainfuck_source_code):
+    def __init__(self, brainfuck_source_code: str) -> None:
         data = list()
 
         for instruction in brainfuck_source_code:
@@ -89,7 +89,7 @@ class Brainfuck2Brainloller():
 
 class Brainfuck2Braincopter():
     """Class for conversion from Brainfuck to Braincopter"""
-    def __init__(self, bitmap, brainfuck_source_code):
+    def __init__(self, bitmap: list, brainfuck_source_code: str) -> None:
         self.transition_table = {
             '>': 0,
             '<': 1,
@@ -171,13 +171,8 @@ class Brainfuck2Braincopter():
             else:
                 column -= 1
 
-    def brainfuck_pixel_encode(self, value, pixel):
-        """Method for encoding Brainfuck's instruction into the pixel without significant change of color.
-
-        :param value:
-        :param pixel:
-        :return:
-        """
+    def brainfuck_pixel_encode(self, value: int, pixel: list) -> tuple:
+        """Method for encoding Brainfuck's instruction into the pixel without significant change of color."""
         r = pixel[0]
         g = pixel[1]
         b = pixel[2]
@@ -192,7 +187,7 @@ class Brainfuck2Braincopter():
 #
 
 
-def bf2bl(src, dst):
+def bf2bl(src: str, dst: str) -> None:
     """Help function, if it's called the conversion from Brainfuck to Brainloller from the command line. """
     brainfuck_source_code = str()
 
@@ -207,7 +202,7 @@ def bf2bl(src, dst):
     image_png.PNGWriter(bitmap, dst)
 
 
-def bl2bf(src, dst):
+def bl2bf(src: str, dst: str) -> None:
     """Help function, if it's called the conversion from Brainloller to Brainfuck from the command line. """
     program = brainx.Brainloller(src, run=False)
 
@@ -215,7 +210,7 @@ def bl2bf(src, dst):
         f.write(program.data)
 
 
-def bc2bf(src, dst):
+def bc2bf(src: str, dst: str) -> None:
     """Help function, if it's called the conversion from Braincopter to Brainfuck from the command line. """
     program = brainx.Braincopter(src, run=False)
 
@@ -223,7 +218,7 @@ def bc2bf(src, dst):
         f.write(program.data)
 
 
-def bf2bc(src, dst):
+def bf2bc(src: str, dst: str) -> None:
     """Help function, if it's called the conversion from Brainfuck to Braincopter from the command line. """
     brainfuck_code = str()
 
@@ -240,7 +235,7 @@ def bf2bc(src, dst):
     image_png.PNGWriter(bitmap, dst)
 
 
-def bl2bc(src, dst):
+def bl2bc(src: str, dst: str) -> None:
     """Help function, if it's called the conversion from Brainloller to Braincopter from the command line. """
     brainfuck_code = brainx.Brainloller(src, run=False).data
 
@@ -250,7 +245,7 @@ def bl2bc(src, dst):
     image_png.PNGWriter(bitmap, dst)
 
 
-def bc2bl(src, dst):
+def bc2bl(src: str, dst: str) -> None:
     """Help function, if it's called the conversion from Braincopter to Brainloller from the command line. """
     brainfuck_code = brainx.Braincopter(src, run=False).data
 
